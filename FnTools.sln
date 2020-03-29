@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FnTools", "src\FnTools\FnTools.csproj", "{9F159A2D-B749-4CFE-BBA2-19FE767F55BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A416DCC9-3198-4477-8ECD-436CAC20866E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BCEEBF89-7A4C-4EB1-AB13-428AFCE6FD28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FnTools.Tests", "tests\FnTools.Tests\FnTools.Tests.csproj", "{BAB1E15F-A080-43ED-B39F-9AF33DD1C20E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F159A2D-B749-4CFE-BBA2-19FE767F55BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F159A2D-B749-4CFE-BBA2-19FE767F55BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F159A2D-B749-4CFE-BBA2-19FE767F55BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F159A2D-B749-4CFE-BBA2-19FE767F55BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAB1E15F-A080-43ED-B39F-9AF33DD1C20E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAB1E15F-A080-43ED-B39F-9AF33DD1C20E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAB1E15F-A080-43ED-B39F-9AF33DD1C20E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAB1E15F-A080-43ED-B39F-9AF33DD1C20E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9F159A2D-B749-4CFE-BBA2-19FE767F55BD} = {A416DCC9-3198-4477-8ECD-436CAC20866E}
+		{BAB1E15F-A080-43ED-B39F-9AF33DD1C20E} = {BCEEBF89-7A4C-4EB1-AB13-428AFCE6FD28}
+	EndGlobalSection
+EndGlobal
