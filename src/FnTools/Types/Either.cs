@@ -125,6 +125,25 @@ namespace FnTools.Types
 
         public static implicit operator Either<TL, TR>(Either<TL, Nothing> left) => new Either<TL, TR>(left._left);
         public static implicit operator Either<TL, TR>(Either<Nothing, TR> right) => new Either<TL, TR>(right._right);
+
+        public void Deconstruct(out bool isRight, out TL left, out TR right)
+        {
+            switch (State)
+            {
+                case EitherState.Left:
+                    isRight = false;
+                    left = _left;
+                    right = default;
+                    break;
+                case EitherState.Right:
+                    isRight = true;
+                    left = default;
+                    right = _right;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
     }
 
     public readonly struct EitherLeftProjection<TL, TR>

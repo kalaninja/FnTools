@@ -147,6 +147,12 @@ namespace FnTools.Types
         public static Option<T> Some(T value) => new Option<T>(value);
 
         public static Option<T> None => new Option<T>();
+
+        public void Deconstruct(out bool isSome, out T value)
+        {
+            isSome = IsSome;
+            value = _value;
+        }
     }
 
     public static class Option

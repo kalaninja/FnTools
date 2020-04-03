@@ -216,6 +216,13 @@ namespace FnTools.Tests.Types
                 select x).ShouldBe(None);
         }
 
+        [Fact]
+        public void TestPatternMatching()
+        {
+            (Some(1) switch {var (isSome, value) when isSome => value, _ => 0}).ShouldBe(1);
+            (GetNone(1) switch {var (isSome, value) when isSome => value, _ => 0}).ShouldBe(0);
+        }
+
         private static Option<T> GetNone<T>(T _) => None;
     }
 }

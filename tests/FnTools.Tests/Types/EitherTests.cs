@@ -205,5 +205,21 @@ namespace FnTools.Tests.Types
             (from x in Left("left").Left select x.Length).ShouldBe(Left(4));
             (from x in Right("right").Right select x.Length).ShouldBe(Right(5));
         }
+
+        [Fact]
+        public void TestPatternMatching()
+        {
+            (Left(1) switch
+            {
+                var (isRight, left, _) when !isRight => left,
+                _ => 0
+            }).ShouldBe(1);
+            
+            (Right(1) switch
+            {
+                var (isRight, _, right) when isRight => right,
+                _ => 0
+            }).ShouldBe(1);
+        }
     }
 }
