@@ -33,18 +33,18 @@ namespace FnTools.Types
         [return: MaybeNull]
         public T GetOrDefault() => IsSome ? _value : default;
 
-        public Option<TReturn> Map<TReturn>(Func<T, TReturn> map)
+        public Option<TResult> Map<TResult>(Func<T, TResult> map)
         {
             _ = map ?? throw new ArgumentNullException(nameof(map));
 
-            return IsSome ? map(_value) : new Option<TReturn>();
+            return IsSome ? map(_value) : new Option<TResult>();
         }
 
-        public Option<TReturn> FlatMap<TReturn>(Func<T, Option<TReturn>> map)
+        public Option<TResult> FlatMap<TResult>(Func<T, Option<TResult>> map)
         {
             _ = map ?? throw new ArgumentNullException(nameof(map));
 
-            return IsSome ? map(_value) : new Option<TReturn>();
+            return IsSome ? map(_value) : new Option<TResult>();
         }
 
         public Option<T> Filter(Func<T, bool> condition)
@@ -61,14 +61,14 @@ namespace FnTools.Types
             return IsSome && condition(_value);
         }
 
-        public TReturn Fold<TReturn>(Func<T, TReturn> some, TReturn none)
+        public TResult Fold<TResult>(Func<T, TResult> some, TResult none)
         {
             _ = some ?? throw new ArgumentNullException(nameof(some));
 
             return IsSome ? some(_value) : none;
         }
 
-        public TReturn Fold<TReturn>(Func<T, TReturn> some, Func<TReturn> none)
+        public TResult Fold<TResult>(Func<T, TResult> some, Func<TResult> none)
         {
             _ = some ?? throw new ArgumentNullException(nameof(some));
             _ = none ?? throw new ArgumentNullException(nameof(none));
@@ -109,10 +109,7 @@ namespace FnTools.Types
 
         public static implicit operator Option<T>(Option<Nothing> _) => new Option<T>();
 
-        public static implicit operator Option<T>(T value) =>
-            value is null
-                ? new Option<T>()
-                : new Option<T>(value);
+        public static implicit operator Option<T>(T value) => value is null ? new Option<T>() : new Option<T>(value);
 
         public static explicit operator T(Option<T> option) =>
             option.IsSome
@@ -155,6 +152,8 @@ namespace FnTools.Types
     public static class Option
     {
         public static Option<T> ToOption<T>(this T value) => value;
+
+        public static Option<T> ToSome<T>(this T value) => Some(value);
 
         public static Option<T> Flatten<T>(this Option<Option<T>> self) => self.FlatMap(Combinators.I);
 

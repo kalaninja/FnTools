@@ -116,6 +116,10 @@ namespace FnTools.Tests.Types
             ((string?) null).ToOption().ShouldBe(None);
 
         [Fact]
+        public void ToSomeReturnsSomeForNull() =>
+            ((int?) null).ToSome().ShouldBe(Some<int?>(null));
+
+        [Fact]
         public void TestFold()
         {
             Some(true).Fold(x => 10, () => -10).ShouldBe(10);
