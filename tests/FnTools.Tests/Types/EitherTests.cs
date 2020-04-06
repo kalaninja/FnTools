@@ -18,6 +18,8 @@ namespace FnTools.Tests.Types
 
             Should.Throw<InvalidOperationException>(() => bottom.Left.Get());
             Should.Throw<InvalidOperationException>(() => bottom.Right.Get());
+            Should.Throw<InvalidOperationException>(() => { var (_, _, _) = bottom; });
+            Should.Throw<InvalidOperationException>(() => bottom.Match(_ => { }, _ => { }));
         }
 
         [Fact]
@@ -97,7 +99,7 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
-        public void Operators()
+        public void TestOperators()
         {
             (Left(true) == Left(false)).ShouldBe(false);
             (Left(true) == (Either<bool, bool>) Right(true)).ShouldBe(false);
@@ -107,8 +109,16 @@ namespace FnTools.Tests.Types
             (Left(true) != (Either<bool, bool>) Right(true)).ShouldBe(true);
             (Right("right") != Right("right")).ShouldBe(false);
 
+            Left("left").Equals((object) Left("left")).ShouldBe(true);
+            Left("left").Equals((object) Left(1)).ShouldBe(false);
+
             (Left(true) ? "left" : "right").ShouldBe("left");
             (Right(true) ? "left" : "right").ShouldBe("right");
+
+            ((string) Left("left")).ShouldBe("left");
+            Should.Throw<InvalidCastException>(() => (Nothing) Left("left"));
+            ((string) Right("right")).ShouldBe("right");
+            Should.Throw<InvalidCastException>(() => (Nothing) Right("right"));
         }
 
         [Fact]
@@ -214,7 +224,7 @@ namespace FnTools.Tests.Types
                 var (isRight, left, _) when !isRight => left,
                 _ => 0
             }).ShouldBe(1);
-            
+
             (Right(1) switch
             {
                 var (isRight, _, right) when isRight => right,

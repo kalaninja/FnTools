@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using FnTools.Exceptions;
+using FnTools.Types.Interfaces;
 
 namespace FnTools.Types
 {
@@ -51,9 +53,9 @@ namespace FnTools.Types
 
             return State switch
             {
-                EitherState.Left => left(_left),
                 EitherState.Right => right(_right),
-                _ => throw new InvalidOperationException()
+                EitherState.Left => left(_left),
+                _ => throw new InvalidOperationException(ExceptionMessages.EitherIsBottom)
             };
         }
 
@@ -64,43 +66,43 @@ namespace FnTools.Types
 
             switch (State)
             {
-                case EitherState.Left:
-                    left(_left);
-                    break;
                 case EitherState.Right:
                     right(_right);
                     break;
+                case EitherState.Left:
+                    left(_left);
+                    break;
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(ExceptionMessages.EitherIsBottom);
             }
         }
 
         public Either<TR, TL> Swap() =>
             State switch
             {
-                EitherState.Left => (Either<TR, TL>) _left,
                 EitherState.Right => _right,
-                _ => throw new InvalidOperationException()
+                EitherState.Left => (Either<TR, TL>) _left,
+                _ => throw new InvalidOperationException(ExceptionMessages.EitherIsBottom)
             };
 
         public override string ToString() =>
             State switch
             {
-                EitherState.Left => $"Left({_left})",
                 EitherState.Right => $"Right({_right})",
-                _ => throw new InvalidOperationException()
+                EitherState.Left => $"Left({_left})",
+                _ => throw new InvalidOperationException(ExceptionMessages.EitherIsBottom)
             };
 
         public bool Equals(Either<TL, TR> other) =>
             State == other.State && State switch
             {
-                EitherState.Left => EqualityComparer<TL>.Default.Equals(_left, other._left),
                 EitherState.Right => EqualityComparer<TR>.Default.Equals(_right, other._right),
-                _ => throw new InvalidOperationException()
+                EitherState.Left => EqualityComparer<TL>.Default.Equals(_left, other._left),
+                _ => throw new InvalidOperationException(ExceptionMessages.EitherIsBottom)
             };
 
-        public override bool Equals(object obj) =>
-            !ReferenceEquals(null, obj) && obj is Either<TL, TR> other && Equals(other);
+        public override bool Equals(object? obj) =>
+            obj is Either<TL, TR> other && Equals(other);
 
         public override int GetHashCode()
         {
@@ -126,27 +128,40 @@ namespace FnTools.Types
         public static implicit operator Either<TL, TR>(Either<TL, Nothing> left) => new Either<TL, TR>(left._left);
         public static implicit operator Either<TL, TR>(Either<Nothing, TR> right) => new Either<TL, TR>(right._right);
 
+        public static explicit operator TL(Either<TL, TR> either) =>
+            either.IsLeft
+                ? either._left
+                : throw new InvalidCastException(ExceptionMessages.EitherIsNotLeft);
+
+        public static explicit operator TR(Either<TL, TR> either) =>
+            either.IsRight
+                ? either._right
+                : throw new InvalidCastException(ExceptionMessages.EitherIsNotRight);
+
+
+#nullable disable warnings
         public void Deconstruct(out bool isRight, out TL left, out TR right)
         {
             switch (State)
             {
-                case EitherState.Left:
-                    isRight = false;
-                    left = _left;
-                    right = default;
-                    break;
                 case EitherState.Right:
                     isRight = true;
                     left = default;
                     right = _right;
                     break;
+                case EitherState.Left:
+                    isRight = false;
+                    left = _left;
+                    right = default;
+                    break;
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(ExceptionMessages.EitherIsBottom);
             }
         }
+#nullable restore warnings
     }
 
-    public readonly struct EitherLeftProjection<TL, TR>
+    public readonly struct EitherLeftProjection<TL, TR> : IGettable<TL>, IToOption<TL>
     {
         private readonly Either<TL, TR> _either;
 
@@ -155,7 +170,9 @@ namespace FnTools.Types
             _either = either;
         }
 
-        public TL Get() => _either.IsLeft ? _either._left : throw new InvalidOperationException();
+        public TL Get() => _either.IsLeft
+            ? _either._left
+            : throw new InvalidOperationException(ExceptionMessages.EitherIsNotLeft);
 
         public TL GetOrElse(TL or) => _either.IsLeft ? _either._left : or;
 
@@ -199,7 +216,7 @@ namespace FnTools.Types
         public Option<TL> ToOption() => _either.IsLeft ? new Option<TL>(_either._left) : new Option<TL>();
     }
 
-    public readonly struct EitherRightProjection<TL, TR>
+    public readonly struct EitherRightProjection<TL, TR> : IGettable<TR>, IToOption<TR>
     {
         private readonly Either<TL, TR> _either;
 
@@ -208,7 +225,9 @@ namespace FnTools.Types
             _either = either;
         }
 
-        public TR Get() => _either.IsRight ? _either._right : throw new InvalidOperationException();
+        public TR Get() => _either.IsRight
+            ? _either._right
+            : throw new InvalidOperationException(ExceptionMessages.EitherIsNotRight);
 
         public TR GetOrElse(TR or) => _either.IsRight ? _either._right : or;
 

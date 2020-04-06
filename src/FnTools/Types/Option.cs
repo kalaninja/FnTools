@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using FnTools.Exceptions;
+using FnTools.Types.Interfaces;
 using static FnTools.Prelude;
 
 namespace FnTools.Types
 {
-    public readonly struct Option<T> : IEquatable<Option<T>>
+    public readonly struct Option<T> : IGettable<T>, IToEither<T>, IEquatable<Option<T>>
     {
-        private readonly T _value;
+        [AllowNull] private readonly T _value;
 
         public bool IsSome { get; }
 
@@ -19,7 +21,7 @@ namespace FnTools.Types
             _value = value;
         }
 
-        public T Get() => IsSome ? _value : throw new InvalidOperationException();
+        public T Get() => IsSome ? _value : throw new InvalidOperationException(ExceptionMessages.OptionIsNone);
 
         public T GetOrElse(T or) => IsSome ? _value : or;
 
@@ -87,25 +89,25 @@ namespace FnTools.Types
                 none();
         }
 
-        public Either<T, TR> ToLeft<TR>(TR right) => IsSome ? (Either<T, TR>) Get() : right;
+        public Either<T, TR> ToLeft<TR>(TR right) => IsSome ? (Either<T, TR>) _value : right;
 
         public Either<T, TR> ToLeft<TR>(Func<TR> right)
         {
             _ = right ?? throw new ArgumentNullException(nameof(right));
 
-            return IsSome ? (Either<T, TR>) Get() : right();
+            return IsSome ? (Either<T, TR>) _value : right();
         }
 
-        public Either<TL, T> ToRight<TL>(TL left) => IsSome ? (Either<TL, T>) Get() : left;
+        public Either<TL, T> ToRight<TL>(TL left) => IsSome ? (Either<TL, T>) _value : left;
 
         public Either<TL, T> ToRight<TL>(Func<TL> left)
         {
             _ = left ?? throw new ArgumentNullException(nameof(left));
 
-            return IsSome ? (Either<TL, T>) Get() : left();
+            return IsSome ? (Either<TL, T>) _value : left();
         }
 
-        public override string ToString() => IsSome ? $"Some({_value?.ToString() ?? "null"})" : "None";
+        public override string ToString() => IsSome ? $"Some({_value})" : "None";
 
         public static implicit operator Option<T>(Option<Nothing> _) => new Option<T>();
 
@@ -114,7 +116,7 @@ namespace FnTools.Types
         public static explicit operator T(Option<T> option) =>
             option.IsSome
                 ? option._value
-                : throw new InvalidCastException("Option is None");
+                : throw new InvalidCastException(ExceptionMessages.OptionIsNone);
 
         public static Option<T> operator &(Option<T> left, Option<T> right) => left ? right : left;
 
@@ -127,8 +129,8 @@ namespace FnTools.Types
         public bool Equals(Option<T> other) =>
             IsSome == other.IsSome && (!IsSome || EqualityComparer<T>.Default.Equals(_value, other._value));
 
-        public override bool Equals(object obj) =>
-            !ReferenceEquals(null, obj) && obj is Option<T> other && Equals(other);
+        public override bool Equals(object? obj) =>
+            obj is Option<T> other && Equals(other);
 
         public override int GetHashCode()
         {
@@ -173,7 +175,7 @@ namespace FnTools.Types
         {
             _ = project ?? throw new ArgumentNullException(nameof(project));
 
-            return self.FlatMap(map).FlatMap(x => Some(project(self.Get(), x)));
+            return self.FlatMap(a => map(a).Map(b => project(a, b)));
         }
 
         public static Option<T> Where<T>(this Option<T> self, Func<T, bool> condition) => self.Filter(condition);

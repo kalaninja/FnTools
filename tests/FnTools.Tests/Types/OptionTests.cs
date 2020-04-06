@@ -37,15 +37,15 @@ namespace FnTools.Tests.Types
         [Fact]
         public void NoneGetOrElseExecutesElse()
         {
-            GetNone("ok").GetOrElse("error").ShouldBe("error");
+            GetNone("none").GetOrElse("error").ShouldBe("error");
             Should.Throw<Exception>(
-                    () => GetNone("ok").GetOrElse(() => throw new Exception("error")))
-                .Message.ShouldBe("error");
+                () => GetNone("ok").GetOrElse(() => throw new Exception("error"))
+            ).Message.ShouldBe("error");
         }
 
         [Fact]
         public void NoneGetOrDefaultReturnsDefaultValue() =>
-            GetNone("ok").GetOrDefault().ShouldBe(null);
+            GetNone("none").GetOrDefault().ShouldBe(null);
 
 
         [Fact]
@@ -73,7 +73,7 @@ namespace FnTools.Tests.Types
 
         [Fact]
         public void SomeToStringReturnsSomeWithValue() =>
-            Option<string?>.Some(null).ToString().ShouldBe("Some(null)");
+            Option<string?>.Some(null).ToString().ShouldBe("Some()");
 
         [Fact]
         public void SomeGetReturnsValue()
@@ -169,6 +169,9 @@ namespace FnTools.Tests.Types
             (Some(false) != Some(true)).ShouldBe(true);
             (Some(true) != None).ShouldBe(true);
 
+            Some(true).Equals((object) Some(true)).ShouldBe(true);
+            Some(true).Equals((object) None).ShouldBe(false);
+
             (None || Some("some") || None ? true : false).ShouldBe(true);
             (Some(1) && Some(2) ? true : false).ShouldBe(true);
 
@@ -219,8 +222,8 @@ namespace FnTools.Tests.Types
         [Fact]
         public void TestPatternMatching()
         {
-            (Some(1) switch {var (isSome, value) when isSome => value, _ => 0}).ShouldBe(1);
-            (GetNone(1) switch {var (isSome, value) when isSome => value, _ => 0}).ShouldBe(0);
+            (Some("some") switch {var (isSome, value) when isSome => value, _ => "none"}).ShouldBe("some");
+            (GetNone("some") switch {var (isSome, value) when isSome => value, _ => "none"}).ShouldBe("none");
         }
 
         private static Option<T> GetNone<T>(T _) => None;

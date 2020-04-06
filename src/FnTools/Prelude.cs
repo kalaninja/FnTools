@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using FnTools.Types;
 
 namespace FnTools
@@ -14,6 +15,30 @@ namespace FnTools
         public static Either<TL, Nothing> Left<TL>(TL left) => left;
 
         public static Either<Nothing, TR> Right<TR>(TR right) => right;
+
+        public static Try<T> Try<T>(Func<T> f)
+        {
+            try
+            {
+                return new Try<T>(f());
+            }
+            catch (Exception e)
+            {
+                return new Try<T>(e);
+            }
+        }
+
+        public static async Task<Try<T>>  Try<T>(Func<Task<T>> f)
+        {
+            try
+            {
+                return new Try<T>(await f().ConfigureAwait(false));
+            }
+            catch (Exception e)
+            {
+                return new Try<T>(e);
+            }
+        }
 
         public static Func<T, string> ToString<T>(bool @throw = false) =>
             self => self?.ToString() ?? (@throw ? throw new ArgumentNullException(nameof(self)) : "null");
