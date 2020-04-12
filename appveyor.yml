@@ -23,9 +23,9 @@ build_script:
 test_script:
   - bash build/coverage.sh
 
-before_package:
-  - cmd: dotnet pack -c Release
+after_test:
+  - cmd: dotnet pack -c Release --output nupkgs
 
 artifacts:
-  - path: '**\*.nupkg'
+  - path: 'nupkgs\*.nupkg'
     name: nuget-packages
