@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text;
 using FnTools.Func;
@@ -47,7 +48,7 @@ namespace FnTools.Examples
         }
 
         [Fact]
-        public void DefAndRun()
+        public void DefAndRunExample()
         {
             var value = 0;
             var action = Def(() => { value = 2; });
@@ -57,6 +58,28 @@ namespace FnTools.Examples
 
             action();
             value.ShouldBe(2);
+        }
+
+        [Fact]
+        public void TryExample()
+        {
+            var readLine = Def(() => new[] {"1", "2", "NaN"}.Shuffle().First());
+            var tryParse =
+                Def((string x) =>
+                    Try(() => int.Parse(x))
+                        .Recover<FormatException>(_ => 0)
+                );
+
+            var tryMax =
+                from x in tryParse(readLine())
+                from y in tryParse(readLine())
+                from z in tryParse(readLine())
+                select x + y + z;
+
+            var max = tryMax.Get();
+
+            max.ShouldBeGreaterThanOrEqualTo(0);
+            max.ShouldBeLessThanOrEqualTo(6);
         }
     }
 }

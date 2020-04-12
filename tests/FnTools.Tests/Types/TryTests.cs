@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using FnTools.Exceptions;
 using FnTools.Types;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
@@ -107,7 +108,7 @@ namespace FnTools.Tests.Types
         {
             var (isSuccess, _, exception) = Try(() => 3).Filter(x => throw new Exception("fail"));
             isSuccess.ShouldBe(false);
-            exception.Message.ShouldBe("fail");
+            exception!.Message.ShouldBe("fail");
         }
 
         [Fact]
@@ -115,14 +116,14 @@ namespace FnTools.Tests.Types
             Try(() => 3).Exists(x => x == 3).ShouldBe(true);
 
         [Fact]
-        public void FoldAppliesSuccessHandlerToSuccess() =>
-            Try(() => "ok").Fold(Combinators.I, _ => "fail").ShouldBe("ok");
+        public async Task FoldAppliesSuccessHandlerToSuccess() =>
+            (await Try(() => Task.FromResult("ok"))).Fold(Combinators.I, _ => "fail").ShouldBe("ok");
 
         [Fact]
-        public void FoldAppliesFailureHandlerToFailure() =>
-            Try(() => false ? "ok" : throw new Exception("fail"))
-                .Fold(Combinators.I, e => e.Message)
-                .ShouldBe("fail");
+        public async Task FoldAppliesFailureHandlerToFailure() =>
+            (await Try(() => false ? Task.FromResult("ok") : throw new Exception("fail")))
+            .Fold(Combinators.I, e => e.Message)
+            .ShouldBe("fail");
 
         [Fact]
         public void FoldAppliesFailureHandlerIfSuccessHandlerThrows() =>

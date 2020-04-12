@@ -28,7 +28,7 @@ namespace FnTools
             }
         }
 
-        public static async Task<Try<T>>  Try<T>(Func<Task<T>> f)
+        public static async Task<Try<T>> Try<T>(Func<Task<T>> f)
         {
             try
             {
