@@ -13,8 +13,7 @@ declare -r DOTCOVER=$ROOT/packages/JetBrains.dotCover.CommandLineTools.$DOTCOVER
 rm -rf $ROOT/coverage
 mkdir $ROOT/coverage
 
-(cd $TEST; 
- $DOTCOVER dotnet --output=$ROOT/coverage/coverage.xml --reportType=DetailedXML -- test)
+$DOTCOVER dotnet --output=$ROOT/coverage/coverage.xml --reportType=DetailedXML -- test
 
 choco install codecov
 codecov -f coverage/coverage.xml
