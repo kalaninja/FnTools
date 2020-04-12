@@ -1,0 +1,13 @@
+version: 0.1.{build}
+
+install:
+  - ps: $env:Path = "C:\Program Files\Git\bin;$env:Path"
+
+before_build:
+  - cmd: dotnet restore -v Minimal
+
+build_script:
+  - cmd: dotnet build -c Release
+
+test_script:
+  - bash build/coverage.sh
