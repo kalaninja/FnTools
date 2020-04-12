@@ -3,6 +3,15 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Title>FnTools</Title>
+        <Description>A practical functional library for C#</Description>
+        <Copyright>Alexander Kalankhodzhaev</Copyright>
+        <PackageProjectUrl>https://github.com/kalaninja/FnTools</PackageProjectUrl>
+        <PackageLicenseUrl></PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/kalaninja/FnTools</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>c# functional fn monad option either try</PackageTags>
     </PropertyGroup>
 
 </Project>

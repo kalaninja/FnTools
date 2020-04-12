@@ -1,5 +1,16 @@
 version: 0.1.{build}
 
+skip_tags: true
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  version_prefix: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
 install:
   - ps: $env:Path = "C:\Program Files\Git\bin;$env:Path"
 
@@ -11,3 +22,10 @@ build_script:
 
 test_script:
   - bash build/coverage.sh
+
+before_package:
+  - cmd: dotnet pack -c Release
+
+artifacts:
+  - path: '**\*.nupkg'
+    name: nuget-packages
