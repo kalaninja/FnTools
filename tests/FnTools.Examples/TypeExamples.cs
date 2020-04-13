@@ -60,15 +60,15 @@ namespace FnTools.Examples
                         .Recover<FormatException>(_ => 0)
                 );
 
-            var tryMax =
+            var trySum =
                 from x in tryParse(readLine())
                 from y in tryParse(readLine())
                 from z in tryParse(readLine())
                 select x + y + z;
 
-            tryMax.IsSuccess.ShouldBe(true);
+            trySum.IsSuccess.ShouldBe(true);
 
-            var max = tryMax.Get();
+            var max = trySum.Get();
 
             max.ShouldBeGreaterThanOrEqualTo(0);
             max.ShouldBeLessThanOrEqualTo(6);

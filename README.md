@@ -100,6 +100,10 @@ Applies an action or a function to its caller
     .Apply(x => Math.Min(x, 30))
     .ShouldBe(25);
 
+// Compare to
+// Assert.Equal(25, Math.Min(Math.Pow(Math.Abs(-5), 2), 30));
+```
+```c#
 var sam = new Person {Name = "Sam", Age = 20};
 sam
     .Apply((ref Person x) => { x.Age++; })
@@ -183,13 +187,13 @@ var tryParse =
             .Recover<FormatException>(_ => 0)
     );
 
-var tryMax =
+var trySum =
     from x in tryParse(Console.ReadLine())
     from y in tryParse(Console.ReadLine())
     from z in tryParse(Console.ReadLine())
     select x + y + z;
 
-tryMax.IsSuccess.ShouldBe(true);
+trySum.IsSuccess.ShouldBe(true);
 
-var max = tryMax.Get();
+var max = trySum.Get();
 ```
