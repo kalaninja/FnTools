@@ -92,7 +92,7 @@ flag.ShouldBe(true);
 ```
 
 ### Apply()
-Applies an action or a function to the caller
+Applies an action or a function to its caller
 ```c#
 (-5)
     .Apply(Math.Abs)
@@ -138,13 +138,16 @@ lowerFirstChar("String").ShouldBe("s");
 ### Option
 Represents optional values. Instances of Option are either `Some()` or `None`.
 ```c#
+var input = new[] {"1", "2", "1.7", "Not_A_Number", "3"};
+
 static Option<int> ParseInt(string val) =>
     int.TryParse(val, out var num) ? Some(num) : None;
 
 var result = new StringBuilder().Apply(sb =>
-    new[] {"1", "2", "1.7", "NotANumber", "3"}
+    input
         .Select(ParseInt)
-        .ForEach(o => o.Map(sb.Append))).ToString();
+        .ForEach(o => o.Map(sb.Append))
+).ToString();
 
 result.ShouldBe("123");
 ```
