@@ -19,8 +19,8 @@ namespace FnTools.Tests
         [Fact]
         public void TestC()
         {
-            Combinators.C<string?, int, string?[]>(x => y => Enumerable.Repeat(x, y).ToArray())(3)(null)
-                .ShouldBe(new string?[] {null, null, null});
+            Combinators.C<string, int, string[]>(x => y => Enumerable.Repeat(x, y).ToArray())(3)(null)
+                .ShouldBe(new string[] {null, null, null});
         }
 
         [Fact]

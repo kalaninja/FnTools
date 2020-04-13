@@ -8,7 +8,7 @@ namespace FnTools.Exceptions
         {
         }
 
-        public NoSuchElementException(string? message) : base(message)
+        public NoSuchElementException(string message) : base(message)
         {
         }
     }

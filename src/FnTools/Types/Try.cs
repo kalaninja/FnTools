@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 using FnTools.Exceptions;
 using FnTools.Types.Interfaces;
@@ -9,8 +8,8 @@ namespace FnTools.Types
 {
     public struct Try<T> : IGettable<T>, IToOption<T>, IToEither<T>, IEquatable<Try<T>>
     {
-        [AllowNull] private readonly T _value;
-        private readonly Exception? _exception;
+        private readonly T _value;
+        private readonly Exception _exception;
         public bool IsSuccess { get; }
 
         public Try(T value)
@@ -237,7 +236,7 @@ namespace FnTools.Types
 
         public Option<T> ToOption() => IsSuccess ? _value : Option<T>.None;
 
-        public override bool Equals(object? obj) =>
+        public override bool Equals(object obj) =>
             obj is Try<T> other && Equals(other);
 
         public override int GetHashCode()
@@ -264,7 +263,7 @@ namespace FnTools.Types
 
         public static Try<T> Failure(Exception exception) => exception;
 
-        public void Deconstruct(out bool isSuccess, out T value, out Exception? exception)
+        public void Deconstruct(out bool isSuccess, out T value, out Exception exception)
         {
             isSuccess = IsSuccess;
             exception = _exception;

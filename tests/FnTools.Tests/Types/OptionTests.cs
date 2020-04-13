@@ -73,7 +73,7 @@ namespace FnTools.Tests.Types
 
         [Fact]
         public void SomeToStringReturnsSomeWithValue() =>
-            Option<string?>.Some(null).ToString().ShouldBe("Some()");
+            Option<string>.Some(null).ToString().ShouldBe("Some()");
 
         [Fact]
         public void SomeGetReturnsValue()
@@ -113,7 +113,7 @@ namespace FnTools.Tests.Types
 
         [Fact]
         public void ToOptionReturnsNoneForNull() =>
-            ((string?) null).ToOption().ShouldBe(None);
+            ((string) null).ToOption().ShouldBe(None);
 
         [Fact]
         public void ToSomeReturnsSomeForNull() =>

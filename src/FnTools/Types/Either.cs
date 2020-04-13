@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using FnTools.Exceptions;
 using FnTools.Types.Interfaces;
 
@@ -15,10 +14,10 @@ namespace FnTools.Types
         }
 
         // ReSharper disable once InconsistentNaming
-        [AllowNull] internal readonly TL _left;
+        internal readonly TL _left;
 
         // ReSharper disable once InconsistentNaming
-        [AllowNull] internal readonly TR _right;
+        internal readonly TR _right;
 
         private EitherState State { get; }
 
@@ -101,7 +100,7 @@ namespace FnTools.Types
                 _ => throw new InvalidOperationException(ExceptionMessages.EitherIsBottom)
             };
 
-        public override bool Equals(object? obj) =>
+        public override bool Equals(object obj) =>
             obj is Either<TL, TR> other && Equals(other);
 
         public override int GetHashCode()
@@ -138,8 +137,6 @@ namespace FnTools.Types
                 ? either._right
                 : throw new InvalidCastException(ExceptionMessages.EitherIsNotRight);
 
-
-#nullable disable warnings
         public void Deconstruct(out bool isRight, out TL left, out TR right)
         {
             switch (State)
@@ -158,7 +155,6 @@ namespace FnTools.Types
                     throw new InvalidOperationException(ExceptionMessages.EitherIsBottom);
             }
         }
-#nullable restore warnings
     }
 
     public readonly struct EitherLeftProjection<TL, TR> : IGettable<TL>, IToOption<TL>

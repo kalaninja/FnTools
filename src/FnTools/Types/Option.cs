@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using FnTools.Exceptions;
 using FnTools.Types.Interfaces;
 using static FnTools.Prelude;
@@ -9,7 +8,7 @@ namespace FnTools.Types
 {
     public readonly struct Option<T> : IGettable<T>, IToEither<T>, IEquatable<Option<T>>
     {
-        [AllowNull] private readonly T _value;
+        private readonly T _value;
 
         public bool IsSome { get; }
 
@@ -32,7 +31,6 @@ namespace FnTools.Types
             return IsSome ? _value : or();
         }
 
-        [return: MaybeNull]
         public T GetOrDefault() => IsSome ? _value : default;
 
         public Option<TResult> Map<TResult>(Func<T, TResult> map)
@@ -129,7 +127,7 @@ namespace FnTools.Types
         public bool Equals(Option<T> other) =>
             IsSome == other.IsSome && (!IsSome || EqualityComparer<T>.Default.Equals(_value, other._value));
 
-        public override bool Equals(object? obj) =>
+        public override bool Equals(object obj) =>
             obj is Option<T> other && Equals(other);
 
         public override int GetHashCode()
