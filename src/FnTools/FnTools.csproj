@@ -8,7 +8,7 @@
         <Description>A practical functional library for C#</Description>
         <Copyright>Alexander Kalankhodzhaev</Copyright>
         <PackageProjectUrl>https://github.com/kalaninja/FnTools</PackageProjectUrl>
-        <PackageLicenseUrl></PackageLicenseUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/kalaninja/FnTools</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>c# functional fn monad option either try</PackageTags>

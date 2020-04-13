@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using FnTools.Exceptions;
 using FnTools.Types;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Shouldly;
 using Xunit;
 using static FnTools.Prelude;
