@@ -195,5 +195,5 @@ var trySum =
 
 trySum.IsSuccess.ShouldBe(true);
 
-var max = trySum.Get();
+var sum = trySum.Get();
 ```

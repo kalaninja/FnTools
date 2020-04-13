@@ -68,10 +68,10 @@ namespace FnTools.Examples
 
             trySum.IsSuccess.ShouldBe(true);
 
-            var max = trySum.Get();
+            var sum = trySum.Get();
 
-            max.ShouldBeGreaterThanOrEqualTo(0);
-            max.ShouldBeLessThanOrEqualTo(6);
+            sum.ShouldBeGreaterThanOrEqualTo(0);
+            sum.ShouldBeLessThanOrEqualTo(6);
         }
     }
 }
