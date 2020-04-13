@@ -9,9 +9,10 @@ namespace FnTools.Tests
         [Fact]
         public void RunExecutesAction()
         {
-            var flag = false;
+            var flag = Run(() => false);
             var action = Def(() => { flag = true; });
             Run(action);
+
             flag.ShouldBe(true);
         }
     }

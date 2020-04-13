@@ -44,6 +44,7 @@ namespace FnTools
             self => self?.ToString() ?? (@throw ? throw new ArgumentNullException(nameof(self)) : "null");
 
         public static void Run(Action a) => a();
+        public static T Run<T>(Func<T> f) => f();
 
         // @formatter:off
         public static Func<TResult> Def<TResult>(Func<TResult> f) => f;

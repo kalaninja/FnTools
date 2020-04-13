@@ -5,7 +5,7 @@ namespace FnTools.Func
     public static partial class Composition
     {
         // @formatter:off
-
+        public static Func<TResult> Compose<T1, TResult>(this Func<T1, TResult> f, Func<T1> g) => () => f(g());
         /// <summary>
         /// (g ∘ f )(x) = g(f(x))
         /// </summary>
