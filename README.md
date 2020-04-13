@@ -50,7 +50,7 @@ var readLine = Def(Console.ReadLine);
 ```
 
 ### Partial()
-Does partial application. You can use `__` (double underscore) to omit a function argument.
+Does partial application. You can use `__` (double underscore) to bypass function arguments.
 ```c#
 var version =
     Def((string text, int major, int min, char rev) => $"{text}: {major}.{min}{rev}");
@@ -131,4 +131,62 @@ var toLower = Def((string str) => str.ToLower());
 var lowerFirstChar = toLower.Compose(firstChar);
 
 lowerFirstChar("String").ShouldBe("s");
+```
+
+## Data types
+
+### Option
+Represents optional values. Instances of Option are either `Some()` or `None`.
+```c#
+static Option<int> ParseInt(string val) =>
+    int.TryParse(val, out var num) ? Some(num) : None;
+
+var result = new StringBuilder().Apply(sb =>
+    new[] {"1", "2", "1.7", "NotANumber", "3"}
+        .Select(ParseInt)
+        .ForEach(o => o.Map(sb.Append))).ToString();
+
+result.ShouldBe("123");
+```
+
+### Either
+Represents a value of one of two possible types (a disjoint union.) Instances of Either are either `Left()` or `Right()`.
+```c#
+static Either<string, int> Div(int x, int y)
+{
+    if (y == 0)
+        return Left("cannot divide by 0");
+    else
+        return Right(x / y);
+}
+
+static string PrintResult(Either<string, int> result) =>
+    result.Fold(
+        left => $"Error: {left}",
+        right => right.ToString()
+    );
+
+Div(10, 1).Apply(PrintResult).ShouldBe("10");
+Div(10, 0).Apply(PrintResult).ShouldBe("Error: cannot divide by 0");
+```
+
+### Try
+The Try type represents a computation that may either result in an exception (`Failure()`), or return a successfully computed value (`Success()`).
+It's similar to, but semantically different from the Either type.
+```c#
+var tryParse =
+    Def((string x) =>
+        Try(() => int.Parse(x))
+            .Recover<FormatException>(_ => 0)
+    );
+
+var tryMax =
+    from x in tryParse(Console.ReadLine())
+    from y in tryParse(Console.ReadLine())
+    from z in tryParse(Console.ReadLine())
+    select x + y + z;
+
+tryMax.IsSuccess.ShouldBe(true);
+
+var max = tryMax.Get();
 ```

@@ -48,19 +48,6 @@ namespace FnTools.Examples
         }
 
         [Fact]
-        public void DefAndRunExample()
-        {
-            var value = 0;
-            var action = Def(() => { value = 2; });
-
-            Run(() => value = 1);
-            value.ShouldBe(1);
-
-            action();
-            value.ShouldBe(2);
-        }
-
-        [Fact]
         public void TryExample()
         {
             var readLine = Def(() => new[] {"1", "2", "NaN"}.Shuffle().First());
@@ -75,6 +62,8 @@ namespace FnTools.Examples
                 from y in tryParse(readLine())
                 from z in tryParse(readLine())
                 select x + y + z;
+
+            tryMax.IsSuccess.ShouldBe(true);
 
             var max = tryMax.Get();
 
