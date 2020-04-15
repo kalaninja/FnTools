@@ -54,6 +54,9 @@ namespace FnTools.Types
             return IsSome && condition(_value) ? this : new Option<T>();
         }
 
+        public Option<T> Filter(bool condition) =>
+            IsSome && condition ? this : new Option<T>();
+
         public bool Exists(Func<T, bool> condition)
         {
             _ = condition ?? throw new ArgumentNullException(nameof(condition));

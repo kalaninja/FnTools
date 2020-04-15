@@ -120,6 +120,13 @@ namespace FnTools.Tests.Types
             ((int?) null).ToSome().ShouldBe(Some<int?>(null));
 
         [Fact]
+        public void FilterReturnsNoneWhenConditionDoesNotHold()
+        {
+            Some(10).Filter(x => x < 1).ShouldBe(None);
+            Some(10).Filter(10 < 1).ShouldBe(None);
+        }
+
+        [Fact]
         public void TestFold()
         {
             Some(true).Fold(x => 10, () => -10).ShouldBe(10);

@@ -181,10 +181,16 @@ namespace FnTools.Tests.Types
             Left(12).Left.Filter(x => x > 10).ShouldBe(Some(Left(12)));
             Left(12).Left.Filter(x => x < 10).ShouldBe(None);
             Right(12).Left.Filter(x => true).ShouldBe(None);
+            Left(12).Left.Filter(true).ShouldBe(Some(Left(12)));
+            Left(12).Left.Filter(false).ShouldBe(None);
+            Right(12).Left.Filter(true).ShouldBe(None);
 
             Right(12).Right.Filter(x => x > 10).ShouldBe(Some(Right(12)));
             Right(12).Right.Filter(x => x < 10).ShouldBe(None);
             Left(12).Right.Filter(x => true).ShouldBe(None);
+            Right(12).Right.Filter(true).ShouldBe(Some(Right(12)));
+            Right(12).Right.Filter(false).ShouldBe(None);
+            Left(12).Right.Filter(true).ShouldBe(None);
         }
 
         [Fact]

@@ -202,6 +202,9 @@ namespace FnTools.Types
             return _either.IsLeft && condition(_either._left) ? _either : new Option<Either<TL, TR>>();
         }
 
+        public Option<Either<TL, TR>> Filter(bool condition) =>
+            _either.IsLeft && condition ? _either : new Option<Either<TL, TR>>();
+
         public bool Exists(Func<TL, bool> condition)
         {
             _ = condition ?? throw new ArgumentNullException(nameof(condition));
@@ -256,6 +259,9 @@ namespace FnTools.Types
 
             return _either.IsRight && condition(_either._right) ? _either : new Option<Either<TL, TR>>();
         }
+
+        public Option<Either<TL, TR>> Filter(bool condition) =>
+            _either.IsRight && condition ? _either : new Option<Either<TL, TR>>();
 
         public bool Exists(Func<TR, bool> condition)
         {

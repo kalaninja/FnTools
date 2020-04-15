@@ -98,9 +98,14 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
-        public void FilterReturnsFailureWhenConditionDoesNotHold() =>
+        public void FilterReturnsFailureWhenConditionDoesNotHold()
+        {
             Should.Throw<NoSuchElementException>(() =>
                 Try(() => 3).Filter(x => x < 0).Rethrow());
+            
+            Should.Throw<NoSuchElementException>(() =>
+                Try(() => 3).Filter(false).Rethrow());
+        }
 
         [Fact]
         public void FilterReturnsFailureWhenFuncThrows()

@@ -32,7 +32,8 @@ using static FnTools.Prelude;
 
 FnTools provides different ways of manipulating functions:
 
-### Def()
+**Def()**
+
 Infers function types
 
 ```c#
@@ -49,7 +50,8 @@ var id = Def((int x) => x);
 var readLine = Def(Console.ReadLine);
 ```
 
-### Partial()
+**Partial()**
+
 Does partial application. You can use `__` (double underscore) to bypass function arguments.
 ```c#
 var version =
@@ -63,13 +65,15 @@ var result = withTextAndVersion('b');
 result.ShouldBe("Version: 2.0b");
 ```
 
-### Compose()
+**Compose()**
+
 Does function composition
 ```c#
 var readInt = Def<string, int>(int.Parse).Compose(Console.ReadLine);
 ```
 
-### Curry() and Uncurry()
+**Curry() and Uncurry()**
+
 Do currying and uncurrying
 ```c#
 var min = Def<int, int, int>(Math.Min);
@@ -81,7 +85,8 @@ var minUncurry = minCurry.Uncurry();
 minUncurry(1, 2).ShouldBe(Math.Min(1, 2));
 ```
 
-### Run()
+**Run()**
+
 Executes an action or a function immediately
 ```c#
 var flag = Run(() => false);
@@ -91,7 +96,8 @@ Run(action);
 flag.ShouldBe(true);
 ```
 
-### Apply()
+**Apply()**
+
 Applies an action or a function to its caller
 ```c#
 (-5)
@@ -110,7 +116,71 @@ sam
     .ShouldBe(new Person {Name = "Sam", Age = 21});
 ```
 
-### More samples
+## Data types
+
+**Option**
+
+Represents optional values. Instances of Option are either `Some()` or `None`.
+```c#
+var input = new[] {"1", "2", "1.7", "Not_A_Number", "3"};
+
+static Option<int> ParseInt(string val) =>
+    int.TryParse(val, out var num) ? Some(num) : None;
+
+var result = new StringBuilder().Apply(sb =>
+    input
+        .Select(ParseInt)
+        .ForEach(o => o.Map(sb.Append))
+).ToString();
+
+result.ShouldBe("123");
+```
+
+**Either**
+
+Represents a value of one of two possible types (a disjoint union.) Instances of Either are either `Left()` or `Right()`.
+```c#
+static Either<string, int> Div(int x, int y)
+{
+    if (y == 0)
+        return Left("cannot divide by 0");
+    else
+        return Right(x / y);
+}
+
+static string PrintResult(Either<string, int> result) =>
+    result.Fold(
+        left => $"Error: {left}",
+        right => right.ToString()
+    );
+
+Div(10, 1).Apply(PrintResult).ShouldBe("10");
+Div(10, 0).Apply(PrintResult).ShouldBe("Error: cannot divide by 0");
+```
+
+**Try**
+
+The Try type represents a computation that may either result in an exception (`Failure()`), or return a successfully computed value (`Success()`).
+It's similar to, but semantically different from the Either type.
+```c#
+var tryParse =
+    Def((string x) =>
+        Try(() => int.Parse(x))
+            .Recover<FormatException>(_ => 0)
+    );
+
+var trySum =
+    from x in tryParse(Console.ReadLine())
+    from y in tryParse(Console.ReadLine())
+    from z in tryParse(Console.ReadLine())
+    select x + y + z;
+
+trySum.IsSuccess.ShouldBe(true);
+
+var sum = trySum.Get();
+```
+
+## More samples
 
 ```c#
 var location = new Location {X = 50, Y = 23};
@@ -137,63 +207,3 @@ var lowerFirstChar = toLower.Compose(firstChar);
 lowerFirstChar("String").ShouldBe("s");
 ```
 
-## Data types
-
-### Option
-Represents optional values. Instances of Option are either `Some()` or `None`.
-```c#
-var input = new[] {"1", "2", "1.7", "Not_A_Number", "3"};
-
-static Option<int> ParseInt(string val) =>
-    int.TryParse(val, out var num) ? Some(num) : None;
-
-var result = new StringBuilder().Apply(sb =>
-    input
-        .Select(ParseInt)
-        .ForEach(o => o.Map(sb.Append))
-).ToString();
-
-result.ShouldBe("123");
-```
-
-### Either
-Represents a value of one of two possible types (a disjoint union.) Instances of Either are either `Left()` or `Right()`.
-```c#
-static Either<string, int> Div(int x, int y)
-{
-    if (y == 0)
-        return Left("cannot divide by 0");
-    else
-        return Right(x / y);
-}
-
-static string PrintResult(Either<string, int> result) =>
-    result.Fold(
-        left => $"Error: {left}",
-        right => right.ToString()
-    );
-
-Div(10, 1).Apply(PrintResult).ShouldBe("10");
-Div(10, 0).Apply(PrintResult).ShouldBe("Error: cannot divide by 0");
-```
-
-### Try
-The Try type represents a computation that may either result in an exception (`Failure()`), or return a successfully computed value (`Success()`).
-It's similar to, but semantically different from the Either type.
-```c#
-var tryParse =
-    Def((string x) =>
-        Try(() => int.Parse(x))
-            .Recover<FormatException>(_ => 0)
-    );
-
-var trySum =
-    from x in tryParse(Console.ReadLine())
-    from y in tryParse(Console.ReadLine())
-    from z in tryParse(Console.ReadLine())
-    select x + y + z;
-
-trySum.IsSuccess.ShouldBe(true);
-
-var sum = trySum.Get();
-```

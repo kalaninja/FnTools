@@ -81,13 +81,16 @@ namespace FnTools.Types
 
             try
             {
-                return !IsSuccess || condition(_value) ? this : new NoSuchElementException();
+                return IsSuccess && condition(_value) ? this : new NoSuchElementException();
             }
             catch (Exception e)
             {
                 return e;
             }
         }
+
+        public Try<T> Filter(bool condition) =>
+            IsSuccess && condition ? this : new NoSuchElementException();
 
         public bool Exists(Func<T, bool> condition)
         {
