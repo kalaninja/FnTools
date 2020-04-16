@@ -5,6 +5,7 @@ namespace FnTools.Func
     public static partial class Composition
     {
         // @formatter:off
+        public static Action Compose<T1>(this Action<T1> f, Func<T1> g) => () => f(g());
         public static Action<T1> Compose<T1, T2>(this Action<T2> f, Func<T1, T2> g) => arg1 => f(g(arg1));
         public static Action<T1, T2> Compose<T1, T2, T3>(this Action<T3> f, Func<T1, T2, T3> g) => (arg1, arg2) => f(g(arg1, arg2));
         public static Action<T1, T2, T3> Compose<T1, T2, T3, T4>(this Action<T4> f, Func<T1, T2, T3, T4> g) => (arg1, arg2, arg3) => f(g(arg1, arg2, arg3));
