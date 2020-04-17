@@ -8,6 +8,15 @@ namespace FnTools.Tests.Func
     public partial class PartialApplicationTests
     {
         [Fact]
+        public void PartialApplication2ArgFunc()
+        {
+            var f = Def((int arg1, int arg2) => arg1 + arg2);
+
+            f.Partial(1)(2).ShouldBe(3);
+            f.Partial(__, 2)(1).ShouldBe(3);
+        }
+
+        [Fact]
         public void PartialApplication3ArgFunc()
         {
             var f = Def((int x, int y, int z) => x + y + z);
@@ -26,8 +35,19 @@ namespace FnTools.Tests.Func
             var f = Def((int arg1, int arg2, int arg3, int arg4) => arg1 + arg2 + arg3 + arg4);
 
             f.Partial(1)(2, 3, 4).ShouldBe(10);
+            f.Partial(__, 2)(1, 3, 4).ShouldBe(10);
             f.Partial(1, 2)(3, 4).ShouldBe(10);
+            f.Partial(__, __, 3)(1, 2, 4).ShouldBe(10);
+            f.Partial(1, __, 3)(2, 4).ShouldBe(10);
+            f.Partial(__, 2, 3)(1, 4).ShouldBe(10);
             f.Partial(1, 2, 3)(4).ShouldBe(10);
+            f.Partial(__, __, __, 4)(1, 2, 3).ShouldBe(10);
+            f.Partial(1, __, __, 4)(2, 3).ShouldBe(10);
+            f.Partial(__, 2, __, 4)(1, 3).ShouldBe(10);
+            f.Partial(1, 2, __, 4)(3).ShouldBe(10);
+            f.Partial(__, __, 3, 4)(1, 2).ShouldBe(10);
+            f.Partial(1, __, 3, 4)(2).ShouldBe(10);
+            f.Partial(__, 2, 3, 4)(1).ShouldBe(10);
         }
 
         [Fact]
@@ -36,9 +56,35 @@ namespace FnTools.Tests.Func
             var f = Def((int arg1, int arg2, int arg3, int arg4, int arg5) => arg1 + arg2 + arg3 + arg4 + arg5);
 
             f.Partial(1)(2, 3, 4, 5).ShouldBe(15);
+            f.Partial(__, 2)(1, 3, 4, 5).ShouldBe(15);
             f.Partial(1, 2)(3, 4, 5).ShouldBe(15);
+            f.Partial(__, __, 3)(1, 2, 4, 5).ShouldBe(15);
+            f.Partial(1, __, 3)(2, 4, 5).ShouldBe(15);
+            f.Partial(__, 2, 3)(1, 4, 5).ShouldBe(15);
             f.Partial(1, 2, 3)(4, 5).ShouldBe(15);
+            f.Partial(__, __, __, 4)(1, 2, 3, 5).ShouldBe(15);
+            f.Partial(1, __, __, 4)(2, 3, 5).ShouldBe(15);
+            f.Partial(__, 2, __, 4)(1, 3, 5).ShouldBe(15);
+            f.Partial(1, 2, __, 4)(3, 5).ShouldBe(15);
+            f.Partial(__, __, 3, 4)(1, 2, 5).ShouldBe(15);
+            f.Partial(1, __, 3, 4)(2, 5).ShouldBe(15);
+            f.Partial(__, 2, 3, 4)(1, 5).ShouldBe(15);
             f.Partial(1, 2, 3, 4)(5).ShouldBe(15);
+            f.Partial(__, __, __, __, 5)(1, 2, 3, 4).ShouldBe(15);
+            f.Partial(1, __, __, __, 5)(2, 3, 4).ShouldBe(15);
+            f.Partial(__, 2, __, __, 5)(1, 3, 4).ShouldBe(15);
+            f.Partial(1, 2, __, __, 5)(3, 4).ShouldBe(15);
+            f.Partial(__, __, 3, __, 5)(1, 2, 4).ShouldBe(15);
+            f.Partial(1, __, 3, __, 5)(2, 4).ShouldBe(15);
+            f.Partial(__, 2, 3, __, 5)(1, 4).ShouldBe(15);
+            f.Partial(1, 2, 3, __, 5)(4).ShouldBe(15);
+            f.Partial(__, __, __, 4, 5)(1, 2, 3).ShouldBe(15);
+            f.Partial(1, __, __, 4, 5)(2, 3).ShouldBe(15);
+            f.Partial(__, 2, __, 4, 5)(1, 3).ShouldBe(15);
+            f.Partial(1, 2, __, 4, 5)(3).ShouldBe(15);
+            f.Partial(__, __, 3, 4, 5)(1, 2).ShouldBe(15);
+            f.Partial(1, __, 3, 4, 5)(2).ShouldBe(15);
+            f.Partial(__, 2, 3, 4, 5)(1).ShouldBe(15);
         }
 
         [Fact]
@@ -48,10 +94,67 @@ namespace FnTools.Tests.Func
                 arg1 + arg2 + arg3 + arg4 + arg5 + arg6);
 
             f.Partial(1)(2, 3, 4, 5, 6).ShouldBe(21);
+            f.Partial(__, 2)(1, 3, 4, 5, 6).ShouldBe(21);
             f.Partial(1, 2)(3, 4, 5, 6).ShouldBe(21);
+            f.Partial(__, __, 3)(1, 2, 4, 5, 6).ShouldBe(21);
+            f.Partial(1, __, 3)(2, 4, 5, 6).ShouldBe(21);
+            f.Partial(__, 2, 3)(1, 4, 5, 6).ShouldBe(21);
             f.Partial(1, 2, 3)(4, 5, 6).ShouldBe(21);
+            f.Partial(__, __, __, 4)(1, 2, 3, 5, 6).ShouldBe(21);
+            f.Partial(1, __, __, 4)(2, 3, 5, 6).ShouldBe(21);
+            f.Partial(__, 2, __, 4)(1, 3, 5, 6).ShouldBe(21);
+            f.Partial(1, 2, __, 4)(3, 5, 6).ShouldBe(21);
+            f.Partial(__, __, 3, 4)(1, 2, 5, 6).ShouldBe(21);
+            f.Partial(1, __, 3, 4)(2, 5, 6).ShouldBe(21);
+            f.Partial(__, 2, 3, 4)(1, 5, 6).ShouldBe(21);
             f.Partial(1, 2, 3, 4)(5, 6).ShouldBe(21);
+            f.Partial(__, __, __, __, 5)(1, 2, 3, 4, 6).ShouldBe(21);
+            f.Partial(1, __, __, __, 5)(2, 3, 4, 6).ShouldBe(21);
+            f.Partial(__, 2, __, __, 5)(1, 3, 4, 6).ShouldBe(21);
+            f.Partial(1, 2, __, __, 5)(3, 4, 6).ShouldBe(21);
+            f.Partial(__, __, 3, __, 5)(1, 2, 4, 6).ShouldBe(21);
+            f.Partial(1, __, 3, __, 5)(2, 4, 6).ShouldBe(21);
+            f.Partial(__, 2, 3, __, 5)(1, 4, 6).ShouldBe(21);
+            f.Partial(1, 2, 3, __, 5)(4, 6).ShouldBe(21);
+            f.Partial(__, __, __, 4, 5)(1, 2, 3, 6).ShouldBe(21);
+            f.Partial(1, __, __, 4, 5)(2, 3, 6).ShouldBe(21);
+            f.Partial(__, 2, __, 4, 5)(1, 3, 6).ShouldBe(21);
+            f.Partial(1, 2, __, 4, 5)(3, 6).ShouldBe(21);
+            f.Partial(__, __, 3, 4, 5)(1, 2, 6).ShouldBe(21);
+            f.Partial(1, __, 3, 4, 5)(2, 6).ShouldBe(21);
+            f.Partial(__, 2, 3, 4, 5)(1, 6).ShouldBe(21);
             f.Partial(1, 2, 3, 4, 5)(6).ShouldBe(21);
+            f.Partial(__, __, __, __, __, 6)(1, 2, 3, 4, 5).ShouldBe(21);
+            f.Partial(1, __, __, __, __, 6)(2, 3, 4, 5).ShouldBe(21);
+            f.Partial(__, 2, __, __, __, 6)(1, 3, 4, 5).ShouldBe(21);
+            f.Partial(1, 2, __, __, __, 6)(3, 4, 5).ShouldBe(21);
+            f.Partial(__, __, 3, __, __, 6)(1, 2, 4, 5).ShouldBe(21);
+            f.Partial(1, __, 3, __, __, 6)(2, 4, 5).ShouldBe(21);
+            f.Partial(__, 2, 3, __, __, 6)(1, 4, 5).ShouldBe(21);
+            f.Partial(1, 2, 3, __, __, 6)(4, 5).ShouldBe(21);
+            f.Partial(__, __, __, 4, __, 6)(1, 2, 3, 5).ShouldBe(21);
+            f.Partial(1, __, __, 4, __, 6)(2, 3, 5).ShouldBe(21);
+            f.Partial(__, 2, __, 4, __, 6)(1, 3, 5).ShouldBe(21);
+            f.Partial(1, 2, __, 4, __, 6)(3, 5).ShouldBe(21);
+            f.Partial(__, __, 3, 4, __, 6)(1, 2, 5).ShouldBe(21);
+            f.Partial(1, __, 3, 4, __, 6)(2, 5).ShouldBe(21);
+            f.Partial(__, 2, 3, 4, __, 6)(1, 5).ShouldBe(21);
+            f.Partial(1, 2, 3, 4, __, 6)(5).ShouldBe(21);
+            f.Partial(__, __, __, __, 5, 6)(1, 2, 3, 4).ShouldBe(21);
+            f.Partial(1, __, __, __, 5, 6)(2, 3, 4).ShouldBe(21);
+            f.Partial(__, 2, __, __, 5, 6)(1, 3, 4).ShouldBe(21);
+            f.Partial(1, 2, __, __, 5, 6)(3, 4).ShouldBe(21);
+            f.Partial(__, __, 3, __, 5, 6)(1, 2, 4).ShouldBe(21);
+            f.Partial(1, __, 3, __, 5, 6)(2, 4).ShouldBe(21);
+            f.Partial(__, 2, 3, __, 5, 6)(1, 4).ShouldBe(21);
+            f.Partial(1, 2, 3, __, 5, 6)(4).ShouldBe(21);
+            f.Partial(__, __, __, 4, 5, 6)(1, 2, 3).ShouldBe(21);
+            f.Partial(1, __, __, 4, 5, 6)(2, 3).ShouldBe(21);
+            f.Partial(__, 2, __, 4, 5, 6)(1, 3).ShouldBe(21);
+            f.Partial(1, 2, __, 4, 5, 6)(3).ShouldBe(21);
+            f.Partial(__, __, 3, 4, 5, 6)(1, 2).ShouldBe(21);
+            f.Partial(1, __, 3, 4, 5, 6)(2).ShouldBe(21);
+            f.Partial(__, 2, 3, 4, 5, 6)(1).ShouldBe(21);
         }
 
         [Fact]
