@@ -53,6 +53,7 @@ namespace FnTools.Tests.Types
         {
             Left("left").Swap().ShouldBe(Right("left"));
             Right("right").Swap().ShouldBe(Left("right"));
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().Swap());
         }
 
         [Fact]
@@ -60,6 +61,7 @@ namespace FnTools.Tests.Types
         {
             Left("left").Match(x => x.ShouldBe("left"), _ => true.ShouldNotBe(true));
             Right("right").Match(_ => true.ShouldNotBe(true), x => x.ShouldBe("right"));
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().Match(_ => { }, _ => { }));
         }
 
         [Fact]
@@ -67,6 +69,15 @@ namespace FnTools.Tests.Types
         {
             Left("left").Fold(x => x, _ => "error").ShouldBe("left");
             Right("right").Fold(x => "error", x => x).ShouldBe("right");
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().Fold(Combinators.I, Combinators.I));
+        }
+
+        [Fact]
+        public void BiMapMapsBothSides()
+        {
+            Left("left").BiMap(x => x.Length, _ => "right").ShouldBe(Left(4));
+            Right("right").BiMap(_ => "left", x => x.Length).ShouldBe(Right(5));
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().BiMap(Combinators.I, Combinators.I));
         }
 
         [Fact]
@@ -170,27 +181,29 @@ namespace FnTools.Tests.Types
         {
             Left(true).Left.FlatMap(x => Left("left")).ShouldBe(Left("left"));
             Right(true).Left.FlatMap(x => Left("left")).ShouldBe(Right(true));
+            ((Either<string, string>) Left("left")).Left.FlatMap(_ => Right("right")).ShouldBe(Right("right"));
 
             Right(true).Right.FlatMap(x => Right("right")).ShouldBe(Right("right"));
             Left(true).Right.FlatMap(x => Right("right")).ShouldBe(Left(true));
+            ((Either<string, string>) Right("right")).Right.FlatMap(_ => Left("left")).ShouldBe(Left("left"));
         }
 
         [Fact]
         public void Filter()
         {
-            Left(12).Left.Filter(x => x > 10).ShouldBe(Some(Left(12)));
-            Left(12).Left.Filter(x => x < 10).ShouldBe(None);
-            Right(12).Left.Filter(x => true).ShouldBe(None);
-            Left(12).Left.Filter(true).ShouldBe(Some(Left(12)));
-            Left(12).Left.Filter(false).ShouldBe(None);
-            Right(12).Left.Filter(true).ShouldBe(None);
+            Left(12).Left.FilterToOption(x => x > 10).ShouldBe(Some(Left(12)));
+            Left(12).Left.FilterToOption(x => x < 10).ShouldBe(None);
+            Right(12).Left.FilterToOption(x => true).ShouldBe(None);
+            Left(12).Left.FilterToOption(true).ShouldBe(Some(Left(12)));
+            Left(12).Left.FilterToOption(false).ShouldBe(None);
+            Right(12).Left.FilterToOption(true).ShouldBe(None);
 
-            Right(12).Right.Filter(x => x > 10).ShouldBe(Some(Right(12)));
-            Right(12).Right.Filter(x => x < 10).ShouldBe(None);
-            Left(12).Right.Filter(x => true).ShouldBe(None);
-            Right(12).Right.Filter(true).ShouldBe(Some(Right(12)));
-            Right(12).Right.Filter(false).ShouldBe(None);
-            Left(12).Right.Filter(true).ShouldBe(None);
+            Right(12).Right.FilterToOption(x => x > 10).ShouldBe(Some(Right(12)));
+            Right(12).Right.FilterToOption(x => x < 10).ShouldBe(None);
+            Left(12).Right.FilterToOption(x => true).ShouldBe(None);
+            Right(12).Right.FilterToOption(true).ShouldBe(Some(Right(12)));
+            Right(12).Right.FilterToOption(false).ShouldBe(None);
+            Left(12).Right.FilterToOption(true).ShouldBe(None);
         }
 
         [Fact]

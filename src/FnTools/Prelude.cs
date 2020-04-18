@@ -6,14 +6,39 @@ namespace FnTools
 {
     public static class Prelude
     {
+        /// <summary>
+        /// Instance of the Nothing class.
+        /// Used in Partial Application to o indicate that the parameter is bypassed. 
+        /// </summary>
         public static Nothing __ => new Nothing();
 
+        /// <summary>
+        /// Instantiates Some representing an existing value of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static Option<T> Some<T>(T value) => new Option<T>(value);
 
+        /// <summary>
+        /// Instantiates None representing no value.
+        /// </summary>
         public static Option<Nothing> None => new Option<Nothing>();
 
+        /// <summary>
+        /// Instantiates Left with the value of <typeparamref name="TL"/>
+        /// </summary>
+        /// <param name="left"></param>
+        /// <typeparam name="TL"></typeparam>
+        /// <returns></returns>
         public static Either<TL, Nothing> Left<TL>(TL left) => left;
 
+        /// <summary>
+        /// Instantiates Right with the value of <typeparamref name="TR"/>
+        /// </summary>
+        /// <param name="right"></param>
+        /// <typeparam name="TR"></typeparam>
+        /// <returns></returns>
         public static Either<Nothing, TR> Right<TR>(TR right) => right;
 
         public static Result<TOk, Nothing> Ok<TOk>(TOk ok) => ok;
@@ -24,6 +49,13 @@ namespace FnTools
         
         public static Result<TOk, TError> Error<TOk, TError>(TError error) => Result<TOk, TError>.CreateError(error);
 
+        /// <summary>
+        /// Constructs a Try using the function <paramref name="f"/>.
+        /// This method will ensure any exception is caught and a Failure object is returned.
+        /// </summary>
+        /// <param name="f"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static Try<T> Try<T>(Func<T> f)
         {
             try
@@ -36,6 +68,13 @@ namespace FnTools
             }
         }
 
+        /// <summary>
+        /// Constructs a Try using the function <paramref name="f"/> returning Task of <typeparamref name="T"/>.
+        /// This method will ensure any non-fatal exception is caught and a Failure object is returned.
+        /// </summary>
+        /// <param name="f"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static async Task<Try<T>> Try<T>(Func<Task<T>> f)
         {
             try
@@ -51,7 +90,18 @@ namespace FnTools
         public static Func<T, string> ToString<T>(bool @throw = false) =>
             self => self?.ToString() ?? (@throw ? throw new ArgumentNullException(nameof(self)) : "null");
 
+        /// <summary>
+        /// Executes the specified action.
+        /// </summary>
+        /// <param name="a"></param>
         public static void Run(Action a) => a();
+
+        /// <summary>
+        /// Evaluates the specified function and returns its result.
+        /// </summary>
+        /// <param name="f"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T Run<T>(Func<T> f) => f();
 
         // @formatter:off

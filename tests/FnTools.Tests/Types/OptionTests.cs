@@ -164,6 +164,17 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
+        public void FlatTapDiscardsResult()
+        {
+            None.FlatTap(_ => Some(true)).ShouldBe(None);
+            Some(true).FlatTap(x => Some(!x)).ShouldBe(Some(true));
+        }
+
+        [Fact]
+        public void FlatTapKeepsEffect() =>
+            Some(true).FlatTap(_ => None).ShouldBe(None);
+
+        [Fact]
         public void TestOperators()
         {
             (None == None).ShouldBe(true);

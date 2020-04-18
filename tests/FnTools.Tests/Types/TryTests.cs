@@ -16,6 +16,7 @@ namespace FnTools.Tests.Types
             var bottom = new Try<Nothing>();
 
             bottom.IsSuccess.ShouldBe(false);
+            bottom.IsFailure.ShouldBe(false);
             Should.Throw<InvalidOperationException>(() => bottom.Get());
         }
 
@@ -25,6 +26,7 @@ namespace FnTools.Tests.Types
             var success = new Try<string>("ok");
 
             success.IsSuccess.ShouldBe(true);
+            success.IsFailure.ShouldBe(false);
             success.Get().ShouldBe("ok");
             success.GetOrElse("else").ShouldBe("ok");
             success.GetOrElse(() => "else").ShouldBe("ok");
@@ -38,6 +40,7 @@ namespace FnTools.Tests.Types
             var failure = new Try<string>(new Exception("fail"));
 
             failure.IsSuccess.ShouldBe(false);
+            failure.IsFailure.ShouldBe(true);
             Should.Throw<Exception>(() => failure.Get()).Message.ShouldBe("fail");
             failure.GetOrElse("fail").ShouldBe("fail");
             failure.GetOrElse(() => "fail").ShouldBe("fail");
@@ -90,6 +93,26 @@ namespace FnTools.Tests.Types
             ).Message.ShouldBe("fail");
 
         [Fact]
+        public void FlatTapDiscardsResult()
+        {
+            Try(() => int.Parse("not a number")).FlatTap(x => Try(() => int.Parse("1"))).IsFailure.ShouldBe(true);
+            Try(() => int.Parse("1")).FlatTap(x => Try(() => x + 1)).ShouldBe(1);
+        }
+
+        [Fact]
+        public void FlatTapKeepsEffect()
+        {
+            Try(() => 1)
+                .FlatTap(x => Try(() => false ? Try(() => "ok") : throw new Exception("fail")))
+                .IsFailure.ShouldBe(true);
+
+            Should.Throw<Exception>(() =>
+                FnTools.Types.Try<string>.Success("ok")
+                    .FlatTap<string>(x => throw new Exception("fail")).Get()
+            ).Message.ShouldBe("fail");
+        }
+
+        [Fact]
         public void FlattenFlatsNestedTry()
         {
             Try(() => Try(() => "ok")).Flatten().ShouldBe("ok");
@@ -102,7 +125,7 @@ namespace FnTools.Tests.Types
         {
             Should.Throw<NoSuchElementException>(() =>
                 Try(() => 3).Filter(x => x < 0).Rethrow());
-            
+
             Should.Throw<NoSuchElementException>(() =>
                 Try(() => 3).Filter(false).Rethrow());
         }
