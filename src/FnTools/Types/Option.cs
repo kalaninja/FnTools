@@ -110,8 +110,7 @@ namespace FnTools.Types
         }
 
         /// <summary>
-        /// Returns this Option if it is Some and applying the predicate <paramref name="condition"/> to this Option's value returns true.
-        /// Otherwise, return None.
+        /// Returns this Option if it is Some and <paramref name="condition"/> is true. Otherwise, return None.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
