@@ -293,6 +293,33 @@ namespace FnTools.Tests.Types
             (Ok<int, string>(1) != Error<int, string>("error")).ShouldBeTrue();
             (Ok(1) ? true : false).ShouldBeTrue();
             (Error("error") ? false : true).ShouldBeTrue();
+            (Ok<int, string>(1) && Error<int, string>("error") ? true : false).ShouldBeFalse();
+            (Ok<int, string>(1) || Error<int, string>("error") ? true : false).ShouldBeTrue();
+            
+        }
+
+        [Fact]
+        public void TestEquals()
+        {
+            Ok(1).Equals((object) Ok(1)).ShouldBeTrue();
+            Ok(1).Equals((object) Ok("ok")).ShouldBeFalse();
+            Ok(1).Equals((object) Error("error")).ShouldBeFalse();
+            Error("error").Equals((object) Error("error")).ShouldBeTrue();
+            Error("error").Equals((object) Error("some error")).ShouldBeFalse();
+            Error("error").Equals((object) Ok(1)).ShouldBeFalse();
+        }
+
+        [Fact]
+        public void TestGetHashCode()
+        {
+            Ok(1).GetHashCode().ShouldBe(Ok(1).GetHashCode());
+            Error(1).GetHashCode().ShouldNotBe(Ok(1).GetHashCode());
+            Ok(1).GetHashCode().ShouldNotBe(Error(1).GetHashCode());
+            Error(1).GetHashCode().ShouldBe(Error(1).GetHashCode());
+            Error(1).GetHashCode().ShouldNotBe(Error(2).GetHashCode());
+
+            Ok<int, int>(1).ShouldNotBe(Error<int, int>(1));
+            Error<int, int>(1).ShouldNotBe(Ok<int, int>(1));
         }
 
         [Fact]
