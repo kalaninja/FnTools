@@ -100,10 +100,17 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
-        public void FlatTapKeepsEffect() =>
+        public void FlatTapKeepsEffect()
+        {
             Try(() => 1)
                 .FlatTap(x => Try(() => false ? Try(() => "ok") : throw new Exception("fail")))
                 .IsFailure.ShouldBe(true);
+
+            Should.Throw<Exception>(() =>
+                FnTools.Types.Try<string>.Success("ok")
+                    .FlatTap<string>(x => throw new Exception("fail")).Get()
+            ).Message.ShouldBe("fail");
+        }
 
         [Fact]
         public void FlattenFlatsNestedTry()

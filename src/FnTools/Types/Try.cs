@@ -139,17 +139,7 @@ namespace FnTools.Types
         {
             _ = map ?? throw new ArgumentNullException(nameof(map));
 
-            if (!IsSuccess)
-                return _exception ?? throw new InvalidOperationException(ExceptionMessages.TryIsBottom);
-
-            try
-            {
-                return FlatMap(x => map(x).Map(_ => x));
-            }
-            catch (Exception e)
-            {
-                return e;
-            }
+            return FlatMap(x => map(x).Map(_ => x));
         }
 
         /// <summary>
