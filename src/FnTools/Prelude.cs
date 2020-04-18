@@ -6,10 +6,23 @@ namespace FnTools
 {
     public static class Prelude
     {
+        /// <summary>
+        /// Instance of the Nothing class.
+        /// Used in Partial Application to o indicate that the parameter is bypassed. 
+        /// </summary>
         public static Nothing __ => new Nothing();
 
+        /// <summary>
+        /// Instantiates Some representing an existing value of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static Option<T> Some<T>(T value) => new Option<T>(value);
 
+        /// <summary>
+        /// Instantiates None representing no value.
+        /// </summary>
         public static Option<Nothing> None => new Option<Nothing>();
 
         public static Either<TL, Nothing> Left<TL>(TL left) => left;
