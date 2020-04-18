@@ -53,6 +53,7 @@ namespace FnTools.Tests.Types
         {
             Left("left").Swap().ShouldBe(Right("left"));
             Right("right").Swap().ShouldBe(Left("right"));
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().Swap());
         }
 
         [Fact]
@@ -60,6 +61,7 @@ namespace FnTools.Tests.Types
         {
             Left("left").Match(x => x.ShouldBe("left"), _ => true.ShouldNotBe(true));
             Right("right").Match(_ => true.ShouldNotBe(true), x => x.ShouldBe("right"));
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().Match(_ => { }, _ => { }));
         }
 
         [Fact]
@@ -67,6 +69,15 @@ namespace FnTools.Tests.Types
         {
             Left("left").Fold(x => x, _ => "error").ShouldBe("left");
             Right("right").Fold(x => "error", x => x).ShouldBe("right");
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().Fold(Combinators.I, Combinators.I));
+        }
+
+        [Fact]
+        public void BiMapMapsBothSides()
+        {
+            Left("left").BiMap(x => x.Length, _ => "right").ShouldBe(Left(4));
+            Right("right").BiMap(_ => "left", x => x.Length).ShouldBe(Right(5));
+            Should.Throw<InvalidOperationException>(() => new Either<int, int>().BiMap(Combinators.I, Combinators.I));
         }
 
         [Fact]

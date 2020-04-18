@@ -70,6 +70,19 @@ namespace FnTools.Types
         /// </summary>
         public EitherRightProjection<TL, TR> Right => new EitherRightProjection<TL, TR>(this);
 
+        public Either<TLResult, TRResult> BiMap<TLResult, TRResult>(Func<TL, TLResult> left, Func<TR, TRResult> right)
+        {
+            _ = left ?? throw new ArgumentNullException(nameof(left));
+            _ = right ?? throw new ArgumentNullException(nameof(right));
+
+            return State switch
+            {
+                EitherState.Right => right(_right),
+                EitherState.Left => left(_left),
+                _ => throw new InvalidOperationException(ExceptionMessages.EitherIsBottom)
+            };
+        }
+
         /// <summary>
         /// Applies <paramref name="left"/> if this is a Left or <paramref name="right"/> if this is a Right.
         /// </summary>
