@@ -16,6 +16,14 @@ namespace FnTools
 
         public static Either<Nothing, TR> Right<TR>(TR right) => right;
 
+        public static Result<TOk, Nothing> Ok<TOk>(TOk ok) => ok;
+
+        public static Result<TOk, TError> Ok<TOk, TError>(TOk ok) => Result<TOk, TError>.CreateOk(ok);
+
+        public static Result<Nothing, TError> Error<TError>(TError error) => error;
+        
+        public static Result<TOk, TError> Error<TOk, TError>(TError error) => Result<TOk, TError>.CreateError(error);
+
         public static Try<T> Try<T>(Func<T> f)
         {
             try

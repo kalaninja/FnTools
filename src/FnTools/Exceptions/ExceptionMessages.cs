@@ -13,5 +13,8 @@ namespace FnTools.Exceptions
         internal const string TryIsBottom = "Try state is wrong";
         internal const string TryIsNotSuccess = "Try is not Success";
         internal const string TryIsNotFailure = "Try is not Failure";
+
+        internal const string ResultIsError = "Result state is Error";
+        internal const string ResultIsOk = "Result state is Ok";
     }
 }
