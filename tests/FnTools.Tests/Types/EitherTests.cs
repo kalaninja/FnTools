@@ -181,9 +181,11 @@ namespace FnTools.Tests.Types
         {
             Left(true).Left.FlatMap(x => Left("left")).ShouldBe(Left("left"));
             Right(true).Left.FlatMap(x => Left("left")).ShouldBe(Right(true));
+            ((Either<string, string>) Left("left")).Left.FlatMap(_ => Right("right")).ShouldBe(Right("right"));
 
             Right(true).Right.FlatMap(x => Right("right")).ShouldBe(Right("right"));
             Left(true).Right.FlatMap(x => Right("right")).ShouldBe(Left(true));
+            ((Either<string, string>) Right("right")).Right.FlatMap(_ => Left("left")).ShouldBe(Left("left"));
         }
 
         [Fact]

@@ -93,6 +93,19 @@ namespace FnTools.Tests.Types
             ).Message.ShouldBe("fail");
 
         [Fact]
+        public void FlatTapDiscardsResult()
+        {
+            Try(() => int.Parse("not a number")).FlatTap(x => Try(() => int.Parse("1"))).IsFailure.ShouldBe(true);
+            Try(() => int.Parse("1")).FlatTap(x => Try(() => x + 1)).ShouldBe(1);
+        }
+
+        [Fact]
+        public void FlatTapKeepsEffect() =>
+            Try(() => 1)
+                .FlatTap(x => Try(() => false ? Try(() => "ok") : throw new Exception("fail")))
+                .IsFailure.ShouldBe(true);
+
+        [Fact]
         public void FlattenFlatsNestedTry()
         {
             Try(() => Try(() => "ok")).Flatten().ShouldBe("ok");

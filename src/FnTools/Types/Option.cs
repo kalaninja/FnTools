@@ -97,6 +97,20 @@ namespace FnTools.Types
         }
 
         /// <summary>
+        /// Applies the given function to this Option's value if this Option is Some, discards the result, but keeps the effect.
+        /// Returns None if this Option is None.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
+        public Option<T> FlatTap<TResult>(Func<T, Option<TResult>> map)
+        {
+            _ = map ?? throw new ArgumentNullException(nameof(map));
+
+            return FlatMap(x => map(x).Map(_ => x));
+        }
+
+        /// <summary>
         /// Returns this Option if it is Some and applying the predicate <paramref name="condition"/> to this Option's value returns true.
         /// Otherwise, return None.
         /// </summary>

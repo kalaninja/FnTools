@@ -105,7 +105,8 @@ namespace FnTools.Types
         }
 
         /// <summary>
-        /// Returns the given function applied to the value from this Success or returns this if this is a Failure.
+        /// Returns the result of the given function applied to the value from this Success
+        /// or returns this if this is a Failure.
         /// </summary>
         /// <param name="map"></param>
         /// <typeparam name="TResult"></typeparam>
@@ -120,6 +121,30 @@ namespace FnTools.Types
             try
             {
                 return map(_value);
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+
+        /// <summary>
+        /// Applies the given function to the value from this Success, discards the result, but keeps the effect
+        /// or returns this if this is a Failure.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
+        public Try<T> FlatTap<TResult>(Func<T, Try<TResult>> map)
+        {
+            _ = map ?? throw new ArgumentNullException(nameof(map));
+
+            if (!IsSuccess)
+                return _exception ?? throw new InvalidOperationException(ExceptionMessages.TryIsBottom);
+
+            try
+            {
+                return FlatMap(x => map(x).Map(_ => x));
             }
             catch (Exception e)
             {
