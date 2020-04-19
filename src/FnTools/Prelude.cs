@@ -26,7 +26,7 @@ namespace FnTools
         public static Option<Nothing> None => new Option<Nothing>();
 
         /// <summary>
-        /// Instantiates Left with the value of <typeparamref name="TL"/>
+        /// Instantiates Left with the value of <typeparamref name="TL"/>.
         /// </summary>
         /// <param name="left"></param>
         /// <typeparam name="TL"></typeparam>
@@ -34,12 +34,30 @@ namespace FnTools
         public static Either<TL, Nothing> Left<TL>(TL left) => left;
 
         /// <summary>
-        /// Instantiates Right with the value of <typeparamref name="TR"/>
+        /// Instantiates Left with the value of <typeparamref name="TL"/>.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <typeparam name="TL"></typeparam>
+        /// <typeparam name="TR"></typeparam>
+        /// <returns></returns>
+        public static Either<TL, TR> Left<TL, TR>(TL left) => left;
+
+        /// <summary>
+        /// Instantiates Right with the value of <typeparamref name="TR"/>.
         /// </summary>
         /// <param name="right"></param>
         /// <typeparam name="TR"></typeparam>
         /// <returns></returns>
         public static Either<Nothing, TR> Right<TR>(TR right) => right;
+
+        /// <summary>
+        /// Instantiates Right with the value of <typeparamref name="TR"/>.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <typeparam name="TL"></typeparam>
+        /// <typeparam name="TR"></typeparam>
+        /// <returns></returns>
+        public static Either<TL, TR> Right<TL, TR>(TR right) => right;
 
         /// <summary>
         /// Constructs a Try using the function <paramref name="f"/>.

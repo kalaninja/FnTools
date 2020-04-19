@@ -147,13 +147,13 @@ namespace FnTools.Tests.Types
         {
             Left("left").Left.GetOrElse("else").ShouldBe("left");
             Left("left").Left.GetOrElse(() => throw new Exception()).ShouldBe("left");
-            ((Either<string, bool>) Right(true)).Left.GetOrElse("else").ShouldBe("else");
-            ((Either<string, bool>) Right(true)).Left.GetOrElse(() => "else").ShouldBe("else");
+            Right<string, bool>(true).Left.GetOrElse("else").ShouldBe("else");
+            Either.Right<string, bool>(true).Left.GetOrElse(() => "else").ShouldBe("else");
 
             Right("right").Right.GetOrElse("else").ShouldBe("right");
             Right("right").Right.GetOrElse(() => throw new Exception()).ShouldBe("right");
-            ((Either<bool, string>) Left(true)).Right.GetOrElse("else").ShouldBe("else");
-            ((Either<bool, string>) Left(true)).Right.GetOrElse(() => "else").ShouldBe("else");
+            Left<bool, string>(true).Right.GetOrElse("else").ShouldBe("else");
+            Either.Left<bool, string>(true).Right.GetOrElse(() => "else").ShouldBe("else");
         }
 
         [Fact]
@@ -169,8 +169,8 @@ namespace FnTools.Tests.Types
         [Fact]
         public void Map()
         {
-            Left("le").Left.Map(x => x + "ft").ShouldBe(Left("left"));
-            Right("right").Left.Map(x => x + "ft").ShouldBe(Right("right"));
+            Either.Left("le").Left.Map(x => x + "ft").ShouldBe(Left("left"));
+            Either.Right("right").Left.Map(x => x + "ft").ShouldBe(Right("right"));
 
             Right("ri").Right.Map(x => x + "ght").ShouldBe(Right("right"));
             Left("left").Right.Map(x => x + "ght").ShouldBe(Left("left"));

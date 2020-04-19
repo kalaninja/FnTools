@@ -305,6 +305,18 @@ namespace FnTools.Types
     public static class Option
     {
         /// <summary>
+        /// Instantiates Some representing an existing value of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Option<T> Some<T>(T value) => new Option<T>(value);
+
+        /// <summary>
+        /// Instantiates None representing no value.
+        /// </summary>
+        public static Option<Nothing> None => new Option<Nothing>();
+        
+        /// <summary>
         /// Converts caller to Some if caller is not null. Otherwise, to None.
         /// </summary>
         /// <param name="value"></param>
