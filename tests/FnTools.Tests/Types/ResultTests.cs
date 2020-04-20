@@ -1,4 +1,5 @@
 using System;
+using FnTools.Func;
 using FnTools.Types;
 using Shouldly;
 using Xunit;
@@ -48,12 +49,12 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
-        public void TestContains()
+        public void TestExists()
         {
-            Should.Throw<ArgumentNullException>(() => Ok(1).Contains(null));
+            Should.Throw<ArgumentNullException>(() => Ok(1).Exists(null));
 
-            Ok(1).Contains(x => x == 1).ShouldBeTrue();
-            Error<int, string>("some error").Contains(x => x == 1).ShouldBeFalse();
+            Ok(1).Exists(x => x == 1).ShouldBeTrue();
+            Error<int, string>("some error").Exists(x => x == 1).ShouldBeFalse();
         }
 
         [Fact]
@@ -62,7 +63,7 @@ namespace FnTools.Tests.Types
             Should.Throw<ArgumentNullException>(() => Ok(1).Map<int>(null));
             Should.Throw<ArgumentNullException>(() => Error(1).Map<int>(null));
 
-            Ok(1).Map(ok => ok.ToString()).ShouldBe(Ok("1"));
+            Ok(1).Map(ToString<int>()).ShouldBe(Ok("1"));
             Ok<int, string>(1).Map(ok => ok.ToString()).ShouldBe(Ok<string, string>("1"));
             Error<int, string>("some error").Map(ok => ok + 1).ShouldBe(Error<int, string>("some error"));
         }
@@ -108,20 +109,6 @@ namespace FnTools.Tests.Types
 
             Should.Throw<ArgumentNullException>(() => Ok(1).FlatMap<int>(null));
             Should.Throw<ArgumentNullException>(() => Error(1).FlatMap<int>(null));
-        }
-
-        [Fact]
-        public void TestErrorFlatMap()
-        {
-            const string error = "error";
-
-            Error(error).ErrorFlatMap(x => Error(error.Length)).ShouldBe(Error(error.Length));
-            Error<int, string>(error).ErrorFlatMap(_ => Ok(1)).ShouldBe(Ok(1));
-            Ok(1).ErrorFlatMap(_ => Ok(1)).ShouldBe(Ok(1));
-            Ok(1).ErrorFlatMap(_ => Error(error)).ShouldBe(Ok(1));
-
-            Should.Throw<ArgumentNullException>(() => Ok(1).ErrorFlatMap<int>(null));
-            Should.Throw<ArgumentNullException>(() => Error(1).ErrorFlatMap<int>(null));
         }
 
         [Fact]
@@ -232,18 +219,37 @@ namespace FnTools.Tests.Types
         [Fact]
         public void TestFilter()
         {
-            Ok(10).Filter(false).ShouldBe(Error<int, Nothing>(new Nothing()));
+            Ok(10).Filter(false).ShouldBe(Error(default(Nothing)));
+            Ok<int, int>(10).Filter(false).ShouldBe(Error(default(int)));
+            Ok<int, string>(10).Filter(false, "error").ShouldBe(Error("error"));
             Ok(10).Filter(true).ShouldBe(Ok(10));
+            Ok<int, int>(10).Filter(true, 12).ShouldBe(Ok(10));
+
             Error("error").Filter(true).ShouldBe(Error("error"));
             Error("error").Filter(false).ShouldBe(Error("error"));
+            Error("error").Filter(false, "exception").ShouldBe(Error("error"));
+            Error("error").Filter(true, "exception").ShouldBe(Error("error"));
 
             Ok(10).Filter(x => x == 10).ShouldBe(Ok(10));
-            Ok(10).Filter(x => x < 5).ShouldBe(Error(new Nothing()));
+            Ok<int, string>(10).Filter(x => x == 10, "error").ShouldBe(Ok(10));
+            Ok<int, string>(10).Filter(x => x == 10, () => "error").ShouldBe(Ok(10));
+            
+            Ok(10).Filter(x => x < 5).ShouldBe(Error(default(Nothing)));
+            Ok<int, string>(10).Filter(x => x < 5, "error").ShouldBe(Error("error"));
+            Ok<int, int>(10).Filter(x => x < 5).ShouldBe(Error(default(int)));
+            Ok<int, int>(10).Filter(x => x < 5, () => 13).ShouldBe(Error(13));
             Error("error").Filter(_ => false).ShouldBe(Error("error"));
             Error("error").Filter(_ => true).ShouldBe(Error("error"));
 
+            Ok<int, string>(10).Filter(x => x == 10, "error").ShouldBe(Ok(10));
+            Ok<int, string>(10).Filter(x => x < 10, "error").ShouldBe(Error("error"));
+            Error("error").Filter(true).ShouldBe(Error("error"));
+            Error("error").Filter(false).ShouldBe(Error("error"));
+
             Should.Throw<ArgumentNullException>(() => Ok(10).Filter(null));
             Should.Throw<ArgumentNullException>(() => Error(10).Filter(null));
+            Should.Throw<ArgumentNullException>(() => Ok(10).Filter(_ => false, null));
+            Should.Throw<ArgumentNullException>(() => Error(10).Filter(_ => false, null));
         }
 
         [Fact]
@@ -295,7 +301,6 @@ namespace FnTools.Tests.Types
             (Error("error") ? false : true).ShouldBeTrue();
             (Ok<int, string>(1) && Error<int, string>("error") ? true : false).ShouldBeFalse();
             (Ok<int, string>(1) || Error<int, string>("error") ? true : false).ShouldBeTrue();
-            
         }
 
         [Fact]
@@ -365,6 +370,22 @@ namespace FnTools.Tests.Types
 
             Should.Throw<ArgumentNullException>(() => Ok(10).Where(null));
             Should.Throw<ArgumentNullException>(() => Error(10).Where(null));
+        }
+
+        [Fact]
+        public void TestWhenOkAndErrorSameTypes()
+        {
+            Ok<string, string>("ок").Apply(x =>
+            {
+                x.IsOk.ShouldBeTrue();
+                x.IsError.ShouldBeFalse();
+            });
+
+            Error<string, string>("error").Apply(x =>
+            {
+                x.IsOk.ShouldBeFalse();
+                x.IsError.ShouldBeTrue();
+            });
         }
     }
 }

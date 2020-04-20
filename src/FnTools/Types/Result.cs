@@ -15,7 +15,7 @@ namespace FnTools.Types
         public bool IsOk { get; }
 
         public bool IsError => !IsOk;
-        
+
         public Option<TError> Error => IsError ? Some(_error) : None;
 
         public Option<TOk> Ok => IsOk ? Some(_ok) : None;
@@ -41,11 +41,11 @@ namespace FnTools.Types
             IsOk = false;
         }
 
-        public bool Contains(Func<TOk, bool> contains)
+        public bool Exists(Func<TOk, bool> condition)
         {
-            _ = contains ?? throw new ArgumentNullException(nameof(contains));
+            _ = condition ?? throw new ArgumentNullException(nameof(condition));
 
-            return IsOk && contains(_ok);
+            return IsOk && condition(_ok);
         }
 
         public Result<T, TError> Map<T>(Func<TOk, T> map)
@@ -77,25 +77,11 @@ namespace FnTools.Types
             return IsOk ? flatMap(_ok) : new Result<T, TError>(_error);
         }
 
-        public Result<TOk, TTError> ErrorFlatMap<TTError>(Func<TError, Result<TOk, TTError>> flatMap)
-        {
-            _ = flatMap ?? throw new ArgumentNullException(nameof(flatMap));
-
-            return IsOk ? new Result<TOk, TTError>(_ok) : flatMap(_error);
-        }
-
         public Result<TOk, TError> FlatTap<T>(Func<TOk, Result<T, TError>> flatTap)
         {
             _ = flatTap ?? throw new ArgumentNullException(nameof(flatTap));
 
-            if (!IsOk)
-            {
-                return this;
-            }
-
-            var (isOk, _, error) = flatTap(_ok);
-
-            return isOk ? this : new Result<TOk, TError>(error);
+            return FlatMap(x => flatTap(x).Map(_ => x));
         }
 
         public Result<TOk, TError> Recover(Func<TError, TOk> recover)
@@ -156,15 +142,23 @@ namespace FnTools.Types
             return IsOk ? ok(_ok) : error(_error);
         }
 
-        public Result<TOk, TError> Filter(Func<TOk, bool> condition)
+        public Result<TOk, TError> Filter(Func<TOk, bool> condition, TError error = default)
         {
             _ = condition ?? throw new ArgumentNullException(nameof(condition));
 
-            return IsOk && condition(_ok) ? this : Error(_error);
+            return IsOk && condition(_ok) ? this : Error(IsOk ? error : _error);
         }
 
-        public Result<TOk, TError> Filter(bool condition) =>
-            IsOk && condition ? this : Error(_error);
+        public Result<TOk, TError> Filter(Func<TOk, bool> condition, Func<TError> error)
+        {
+            _ = condition ?? throw new ArgumentNullException(nameof(condition));
+            _ = error ?? throw new ArgumentNullException(nameof(error));
+
+            return IsOk && condition(_ok) ? this : Error(IsOk ? error() : _error);
+        }
+
+        public Result<TOk, TError> Filter(bool condition, TError error = default) =>
+            IsOk && condition ? this : Error(IsOk ? error : _error);
 
         public override string ToString() =>
             IsOk
@@ -224,18 +218,18 @@ namespace FnTools.Types
             result.IsOk
                 ? result._ok
                 : throw new InvalidCastException(ExceptionMessages.ResultIsError);
-        
+
         public static explicit operator TError(Result<TOk, TError> result) =>
             result.IsError
                 ? result._error
                 : throw new InvalidCastException(ExceptionMessages.ResultIsOk);
 
 
-        internal static Result<TOk, TError> CreateOk(TOk ok) => new Result<TOk, TError>(true, ok, default);
-        internal static Result<TOk, TError> CreateError(TError error) => new Result<TOk, TError>(false, default, error);
+        internal static Result<TOk, TError> CreateOk(TOk ok) => new Result<TOk, TError>(ok);
+        internal static Result<TOk, TError> CreateError(TError error) => new Result<TOk, TError>(error);
     }
 
-    
+
     public static class Result
     {
         public static Result<TOk, TError> Flatten<TOk, TError>(this Result<Result<TOk, TError>, TError> self) =>
