@@ -385,14 +385,24 @@ namespace FnTools.Tests.Types
         public void TestToLeft()
         {
             Ok(1).ToLeft("right").ShouldBe(Left(1));
+            Ok(1).ToLeft(() => "right").ShouldBe(Left(1));
             Error("error").ToLeft("right").ShouldBe(Right("right"));
+            Error("error").ToLeft(() => "right").ShouldBe(Right("right"));
+            
+            Should.Throw<ArgumentNullException>(() => Ok(10).ToLeft<int>(null));
+            Should.Throw<ArgumentNullException>(() => Error(10).ToLeft<int>(null));
         }
 
         [Fact]
         public void TestToRight()
         {
             Ok(1).ToRight("left").ShouldBe(Right(1));
+            Ok(1).ToRight(() => "left").ShouldBe(Right(1));
             Error("error").ToRight("left").ShouldBe(Left("left"));
+            Error("error").ToRight(() => "left").ShouldBe(Left("left"));
+            
+            Should.Throw<ArgumentNullException>(() => Ok(10).ToRight<int>(null));
+            Should.Throw<ArgumentNullException>(() => Error(10).ToRight<int>(null));
         }
     }
 }

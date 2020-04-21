@@ -182,11 +182,6 @@ namespace FnTools.Types
             return IsOk ? Right<TL, TOk>(_ok) : Left<TL, TOk>(left());
         }
 
-        public Either<TError, TOk> ToEither()
-        {
-            return IsOk ? Right<TError, TOk>(_ok) : Left<TError, TOk>(_error);
-        }
-
         public override bool Equals(object obj)
         {
             return obj is Result<TOk, TError> other && Equals(other);
