@@ -42,13 +42,6 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
-        public void TestOk()
-        {
-            Ok(1).Ok.ShouldBe(Some(1));
-            Error("error").Ok.ShouldBe(None);
-        }
-
-        [Fact]
         public void TestExists()
         {
             Should.Throw<ArgumentNullException>(() => Ok(1).Exists(null));

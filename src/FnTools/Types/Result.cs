@@ -18,15 +18,6 @@ namespace FnTools.Types
 
         public Option<TError> Error => IsError ? Some(_error) : None;
 
-        public Option<TOk> Ok => IsOk ? Some(_ok) : None;
-
-        private Result(bool isOk, TOk ok, TError error)
-        {
-            IsOk = isOk;
-            _ok = ok;
-            _error = error;
-        }
-
         public Result(TOk ok)
         {
             _ok = ok;
