@@ -6,7 +6,7 @@ using static FnTools.Prelude;
 
 namespace FnTools.Types
 {
-    public readonly struct Result<TOk, TError> : IGettable<TOk>, IEquatable<Result<TOk, TError>>, IToOption<TOk>
+    public readonly struct Result<TOk, TError> : IGettable<TOk>, IEquatable<Result<TOk, TError>>, IToOption<TOk>, IToEither<TOk>
     {
         private readonly TError _error;
 
@@ -163,6 +163,29 @@ namespace FnTools.Types
         }
 
         public Option<TOk> ToOption() => IsOk ? Some(_ok) : None;
+        
+        public Either<TOk, TR> ToLeft<TR>(TR right) => IsOk ? Left<TOk, TR>(_ok) : Right<TOk, TR>(right);
+
+        public Either<TOk, TR> ToLeft<TR>(Func<TR> right)
+        {
+            _ = right ?? throw new ArgumentNullException(nameof(right));
+            
+            return IsOk ? Left<TOk, TR>(_ok) : Right<TOk, TR>(right());
+        }
+
+        public Either<TL, TOk> ToRight<TL>(TL left) => IsOk ? Right<TL, TOk>(_ok) : Left<TL, TOk>(left);
+
+        public Either<TL, TOk> ToRight<TL>(Func<TL> left)
+        {
+            _ = left ?? throw new ArgumentNullException(nameof(left));
+            
+            return IsOk ? Right<TL, TOk>(_ok) : Left<TL, TOk>(left());
+        }
+
+        public Either<TError, TOk> ToEither()
+        {
+            return IsOk ? Right<TError, TOk>(_ok) : Left<TError, TOk>(_error);
+        }
 
         public override bool Equals(object obj)
         {

@@ -380,5 +380,19 @@ namespace FnTools.Tests.Types
                 x.IsError.ShouldBeTrue();
             });
         }
+
+        [Fact]
+        public void TestToLeft()
+        {
+            Ok(1).ToLeft("right").ShouldBe(Left(1));
+            Error("error").ToLeft("right").ShouldBe(Right("right"));
+        }
+
+        [Fact]
+        public void TestToRight()
+        {
+            Ok(1).ToRight("left").ShouldBe(Right(1));
+            Error("error").ToRight("left").ShouldBe(Left("left"));
+        }
     }
 }
