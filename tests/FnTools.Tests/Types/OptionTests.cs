@@ -129,10 +129,10 @@ namespace FnTools.Tests.Types
         [Fact]
         public void TestFold()
         {
-            Some(true).Fold(x => 10, () => -10).ShouldBe(10);
-            Some(true).Fold(x => 10, -10).ShouldBe(10);
-            None.Fold(x => 10, () => -10).ShouldBe(-10);
-            None.Fold(x => 10, -10).ShouldBe(-10);
+            Option.Some(true).Fold(x => 10, () => -10).ShouldBe(10);
+            Option.Some(true).Fold(x => 10, -10).ShouldBe(10);
+            Option.None.Fold(x => 10, () => -10).ShouldBe(-10);
+            Option.None.Fold(x => 10, -10).ShouldBe(-10);
         }
 
         [Fact]

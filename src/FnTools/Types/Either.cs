@@ -467,6 +467,40 @@ namespace FnTools.Types
         public static Either<TL, TR> JoinRight<TL, TR>(this Either<TL, Either<TL, TR>> self) =>
             self.IsRight ? self._right : new Either<TL, TR>(self._left);
 
+        /// <summary>
+        /// Instantiates Left with the value of <typeparamref name="TL"/>.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <typeparam name="TL"></typeparam>
+        /// <returns></returns>
+        public static Either<TL, Nothing> Left<TL>(TL left) => left;
+
+        /// <summary>
+        /// Instantiates Left with the value of <typeparamref name="TL"/>.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <typeparam name="TL"></typeparam>
+        /// <typeparam name="TR"></typeparam>
+        /// <returns></returns>
+        public static Either<TL, TR> Left<TL, TR>(TL left) => left;
+
+        /// <summary>
+        /// Instantiates Right with the value of <typeparamref name="TR"/>.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <typeparam name="TR"></typeparam>
+        /// <returns></returns>
+        public static Either<Nothing, TR> Right<TR>(TR right) => right;
+
+        /// <summary>
+        /// Instantiates Right with the value of <typeparamref name="TR"/>.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <typeparam name="TL"></typeparam>
+        /// <typeparam name="TR"></typeparam>
+        /// <returns></returns>
+        public static Either<TL, TR> Right<TL, TR>(TR right) => right;
+
         public static Either<TResult, TR> Select<TL, TR, TResult>(
             this EitherLeftProjection<TL, TR> self, Func<TL, TResult> map) => self.Map(map);
 
