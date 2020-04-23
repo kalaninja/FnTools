@@ -12,7 +12,8 @@ namespace FnTools.Types
     /// </summary>
     /// <typeparam name="TOk"></typeparam>
     /// <typeparam name="TError"></typeparam>
-    public readonly struct Result<TOk, TError> : IGettable<TOk>, IEquatable<Result<TOk, TError>>, IToOption<TOk>, IToEither<TOk>
+    public readonly struct Result<TOk, TError>
+        : IEquatable<Result<TOk, TError>>, IGettable<TOk>, IToOption<TOk>, IToEither<TOk>
     {
         private readonly TError _error;
 
@@ -85,20 +86,20 @@ namespace FnTools.Types
 
         /// <summary>
         /// Applies a function to the Ok or Error
-        /// to the Error value. Returns Result containing the result of applying <paramref name="map"/> to the Ok value
-        /// or <paramref name="errorMap"/> to the Error value
+        /// to the Error value. Returns Result containing the result of applying <paramref name="ok"/> to the Ok value
+        /// or <paramref name="error"/> to the Error value
         /// </summary>
-        /// <param name="map"></param>
-        /// <param name="errorMap"></param>
+        /// <param name="ok"></param>
+        /// <param name="error"></param>
         /// <typeparam name="TTOk"></typeparam>
         /// <typeparam name="TTError"></typeparam>
         /// <returns></returns>
-        public Result<TTOk, TTError> BiMap<TTOk, TTError>(Func<TOk, TTOk> map, Func<TError, TTError> errorMap)
+        public Result<TTOk, TTError> BiMap<TTOk, TTError>(Func<TOk, TTOk> ok, Func<TError, TTError> error)
         {
-            _ = map ?? throw new ArgumentNullException(nameof(map));
-            _ = errorMap ?? throw new ArgumentNullException(nameof(errorMap));
+            _ = ok ?? throw new ArgumentNullException(nameof(ok));
+            _ = error ?? throw new ArgumentNullException(nameof(error));
 
-            return IsOk ? Ok<TTOk, TTError>(map(_ok)) : Error<TTOk, TTError>(errorMap(_error));
+            return IsOk ? Ok<TTOk, TTError>(ok(_ok)) : Error<TTOk, TTError>(error(_error));
         }
 
         /// <summary>
@@ -117,33 +118,33 @@ namespace FnTools.Types
         }
 
         /// <summary>
-        /// Returns the Result of applying <paramref name="flatMap"/> to Result's Ok value,
+        /// Returns the Result of applying <paramref name="map"/> to Result's Ok value,
         /// otherwise, returns Error.
-        /// Slightly different from Map() in that <paramref name="flatMap"/>
+        /// Slightly different from Map() in that <paramref name="map"/>
         /// is expected to return a Result (which could be Error).
         /// </summary>
-        /// <param name="flatMap"></param>
+        /// <param name="map"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public Result<T, TError> FlatMap<T>(Func<TOk, Result<T, TError>> flatMap)
+        public Result<T, TError> FlatMap<T>(Func<TOk, Result<T, TError>> map)
         {
-            _ = flatMap ?? throw new ArgumentNullException(nameof(flatMap));
+            _ = map ?? throw new ArgumentNullException(nameof(map));
 
-            return IsOk ? flatMap(_ok) : new Result<T, TError>(_error);
+            return IsOk ? map(_ok) : new Result<T, TError>(_error);
         }
 
         /// <summary>
-        /// Applies <paramref name="flatTap"/> to Result's Ok value discarding the result of applying and
+        /// Applies <paramref name="map"/> to Result's Ok value discarding the result of applying and
         /// returns original Result if result of applying is Ok value. Otherwise, returns Error.
         /// </summary>
-        /// <param name="flatTap"></param>
+        /// <param name="map"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public Result<TOk, TError> FlatTap<T>(Func<TOk, Result<T, TError>> flatTap)
+        public Result<TOk, TError> FlatTap<T>(Func<TOk, Result<T, TError>> map)
         {
-            _ = flatTap ?? throw new ArgumentNullException(nameof(flatTap));
+            _ = map ?? throw new ArgumentNullException(nameof(map));
 
-            return FlatMap(x => flatTap(x).Map(_ => x));
+            return FlatMap(x => map(x).Map(_ => x));
         }
 
         /// <summary>
@@ -158,7 +159,7 @@ namespace FnTools.Types
 
             return IsOk ? this : new Result<TOk, TError>(recover(_error));
         }
-        
+
         /// <summary>
         /// Applies the given function <paramref name="recover"/> if this is Error, otherwise returns this if this is an Ok.
         /// This is like flatMap for the Error.
@@ -177,7 +178,8 @@ namespace FnTools.Types
         /// Returns the value from this Ok or throws the exception if this is an Error.
         /// </summary>
         /// <returns></returns>
-        public TOk Get() => IsOk ? _ok : throw new InvalidOperationException(ExceptionMessages.ResultIsError);
+        public TOk Get() =>
+            IsOk ? _ok : throw new InvalidOperationException(ExceptionMessages.ResultIsError);
 
         /// <summary>
         /// Returns the value from this Ok or the given value of <paramref name="or"/> if this is an Error.
@@ -202,7 +204,7 @@ namespace FnTools.Types
         /// </summary>
         /// <returns></returns>
         public TOk GetOrDefault() => IsOk ? _ok : default;
-        
+
         /// <summary>
         /// Deconstruct Result
         /// </summary>
@@ -317,7 +319,7 @@ namespace FnTools.Types
         /// </summary>
         /// <returns></returns>
         public Option<TOk> ToOption() => IsOk ? Some(_ok) : None;
-        
+
         /// <summary>
         /// Returns a Right containing the given argument <paramref name="right"/> if this is Error,
         /// or a Left containing the value if this is Ok.
@@ -337,7 +339,7 @@ namespace FnTools.Types
         public Either<TOk, TR> ToLeft<TR>(Func<TR> right)
         {
             _ = right ?? throw new ArgumentNullException(nameof(right));
-            
+
             return IsOk ? Left<TOk, TR>(_ok) : Right<TOk, TR>(right());
         }
 
@@ -360,7 +362,7 @@ namespace FnTools.Types
         public Either<TL, TOk> ToRight<TL>(Func<TL> left)
         {
             _ = left ?? throw new ArgumentNullException(nameof(left));
-            
+
             return IsOk ? Right<TL, TOk>(_ok) : Left<TL, TOk>(left());
         }
 
@@ -379,7 +381,6 @@ namespace FnTools.Types
                 return hashCode;
             }
         }
-
 
         public static Result<TOk, TError> operator &(Result<TOk, TError> left, Result<TOk, TError> right) =>
             left ? right : left;
@@ -400,10 +401,11 @@ namespace FnTools.Types
 
         public static implicit operator Result<TOk, TError>(TError error) => new Result<TOk, TError>(error);
 
-        public static implicit operator Result<TOk, TError>(Result<TOk, Nothing> result) => CreateOk(result._ok);
+        public static implicit operator Result<TOk, TError>(Result<TOk, Nothing> result) =>
+            new Result<TOk, TError>(result._ok);
 
         public static implicit operator Result<TOk, TError>(Result<Nothing, TError> result) =>
-            CreateError(result._error);
+            new Result<TOk, TError>(result._error);
 
         public static explicit operator TOk(Result<TOk, TError> result) =>
             result.IsOk
@@ -414,10 +416,6 @@ namespace FnTools.Types
             result.IsError
                 ? result._error
                 : throw new InvalidCastException(ExceptionMessages.ResultIsOk);
-
-        
-        internal static Result<TOk, TError> CreateOk(TOk ok) => new Result<TOk, TError>(ok);
-        internal static Result<TOk, TError> CreateError(TError error) => new Result<TOk, TError>(error);
     }
 
 
@@ -432,7 +430,7 @@ namespace FnTools.Types
         /// <returns></returns>
         public static Result<TOk, TError> Flatten<TOk, TError>(this Result<Result<TOk, TError>, TError> self) =>
             self.FlatMap(Combinators.I);
-        
+
         public static Result<TTOk, TError> Select<TOk, TError, TTOk>(this Result<TOk, TError> self, Func<TOk, TTOk> map)
             => self.Map(map);
 

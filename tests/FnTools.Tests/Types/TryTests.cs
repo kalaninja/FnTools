@@ -314,6 +314,20 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
+        public void ToResultReturnsOkIfSuccess()
+        {
+            Try(() => "ok").ToResult().ShouldBe(Ok("ok"));
+        }
+
+        [Fact]
+        public void ToResultReturnsOkIfFailure()
+        {
+            var result = ((Try<string>) new Exception()).ToResult();
+            result.IsOk.ShouldBe(false);
+            result.Error.IsSome.ShouldBe(true);
+        }
+
+        [Fact]
         public void TestForComprehension()
         {
             (from x in Try(() => "ok") select x).ShouldBe("ok");

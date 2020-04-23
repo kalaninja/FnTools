@@ -11,7 +11,8 @@ namespace FnTools.Types
     /// Instances of Try are either Success or Failure.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public struct Try<T> : IGettable<T>, IToOption<T>, IToEither<T>, IEquatable<Try<T>>
+    public readonly struct Try<T>
+        : IEquatable<Try<T>>, IGettable<T>, IToOption<T>, IToEither<T>, IToResult<T, Exception>
     {
         private readonly T _value;
         private readonly Exception _exception;
@@ -366,7 +367,18 @@ namespace FnTools.Types
                 ? EqualityComparer<T>.Default.Equals(_value, other._value)
                 : Equals(_exception, other._exception));
 
+        /// <summary>
+        /// Returns a Some containing the value if it is Success or a None if this is a Failure.
+        /// </summary>
+        /// <returns></returns>
         public Option<T> ToOption() => IsSuccess ? _value : Option<T>.None;
+
+        /// <summary>
+        /// Returns an Ok containing the value if it is Success or an Error if this is a Failure.
+        /// </summary>
+        /// <returns></returns>
+        public Result<T, Exception> ToResult() =>
+            IsSuccess ? new Result<T, Exception>(_value) : new Result<T, Exception>(_exception);
 
         public override bool Equals(object obj) =>
             obj is Try<T> other && Equals(other);

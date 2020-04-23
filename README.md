@@ -4,7 +4,7 @@ A practical functional library for C# developers.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/9fsm093mmgrsfqtu/branch/master?svg=true)](https://ci.appveyor.com/project/kalaninja/fntools/branch/master)
 [![codecov](https://codecov.io/gh/kalaninja/FnTools/branch/master/graph/badge.svg)](https://codecov.io/gh/kalaninja/FnTools)
-![Nuget](https://img.shields.io/nuget/v/fntools)
+[![Nuget](https://img.shields.io/nuget/v/fntools)](https://www.nuget.org/packages/fntools/)
 
 ## Quickstart
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using FnTools.Exceptions;
 using FnTools.Types.Interfaces;
-using static FnTools.Prelude;
 
 namespace FnTools.Types
 {
@@ -11,7 +10,7 @@ namespace FnTools.Types
     /// The most idiomatic way to use an Option instance is to treat it as a monad and use Map(), FlatMap(), Filter().
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public readonly struct Option<T> : IGettable<T>, IToEither<T>, IEquatable<Option<T>>
+    public readonly struct Option<T> : IEquatable<Option<T>>, IGettable<T>, IToEither<T>
     {
         private readonly T _value;
 
@@ -315,7 +314,7 @@ namespace FnTools.Types
         /// Instantiates None representing no value.
         /// </summary>
         public static Option<Nothing> None => new Option<Nothing>();
-        
+
         /// <summary>
         /// Converts caller to Some if caller is not null. Otherwise, to None.
         /// </summary>

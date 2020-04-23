@@ -74,7 +74,7 @@ namespace FnTools
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
         /// <returns></returns>
-        public static Result<TOk, TError> Ok<TOk, TError>(TOk ok) => Result<TOk, TError>.CreateOk(ok);
+        public static Result<TOk, TError> Ok<TOk, TError>(TOk ok) => new Result<TOk, TError>(ok);
 
         /// <summary>
         /// Instantiates Error with the value of <typeparamref name="TError"/>
@@ -83,7 +83,7 @@ namespace FnTools
         /// <typeparam name="TError"></typeparam>
         /// <returns></returns>
         public static Result<Nothing, TError> Error<TError>(TError error) => error;
-        
+
         /// <summary>
         /// Instantiates Result with state Error with the value of <typeparamref name="TError"/>
         /// </summary>
@@ -91,7 +91,7 @@ namespace FnTools
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
         /// <returns></returns>
-        public static Result<TOk, TError> Error<TOk, TError>(TError error) => Result<TOk, TError>.CreateError(error);
+        public static Result<TOk, TError> Error<TOk, TError>(TError error) => new Result<TOk, TError>(error);
 
         /// <summary>
         /// Constructs a Try using the function <paramref name="f"/>.

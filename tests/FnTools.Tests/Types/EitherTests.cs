@@ -229,6 +229,16 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
+        public void ToResult()
+        {
+            Left("left").Left.ToResult().ShouldBe(Ok("left"));
+            Right("right").Left.ToResult().ShouldBe(Error("right"));
+
+            Right("right").Right.ToResult().ShouldBe(Ok("right"));
+            Left("left").Right.ToResult().ShouldBe(Error("left"));
+        }
+
+        [Fact]
         public void FromComprehension()
         {
             (from x in Left("left").Left select x.Length).ShouldBe(Left(4));

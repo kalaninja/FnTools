@@ -227,7 +227,7 @@ namespace FnTools.Types
         }
     }
 
-    public readonly struct EitherLeftProjection<TL, TR> : IGettable<TL>, IToOption<TL>
+    public readonly struct EitherLeftProjection<TL, TR> : IGettable<TL>, IToOption<TL>, IToResult<TL, TR>
     {
         private readonly Either<TL, TR> _either;
 
@@ -334,9 +334,16 @@ namespace FnTools.Types
         /// </summary>
         /// <returns></returns>
         public Option<TL> ToOption() => _either.IsLeft ? new Option<TL>(_either._left) : new Option<TL>();
+
+        /// <summary>
+        /// Returns an Ok containing the Left value if it exists or a Error if this is a Right.
+        /// </summary>
+        /// <returns></returns>
+        public Result<TL, TR> ToResult() =>
+            _either.IsLeft ? new Result<TL, TR>(_either._left) : new Result<TL, TR>(_either._right);
     }
 
-    public readonly struct EitherRightProjection<TL, TR> : IGettable<TR>, IToOption<TR>
+    public readonly struct EitherRightProjection<TL, TR> : IGettable<TR>, IToOption<TR>, IToResult<TR, TL>
     {
         private readonly Either<TL, TR> _either;
 
@@ -443,6 +450,13 @@ namespace FnTools.Types
         /// </summary>
         /// <returns></returns>
         public Option<TR> ToOption() => _either.IsRight ? new Option<TR>(_either._right) : new Option<TR>();
+
+        /// <summary>
+        /// Returns an Ok containing the Right value if it exists or an Error if this is a Left.
+        /// </summary>
+        /// <returns></returns>
+        public Result<TR, TL> ToResult() =>
+            _either.IsRight ? new Result<TR, TL>(_either._right) : new Result<TR, TL>(_either._left);
     }
 
     public static class Either
