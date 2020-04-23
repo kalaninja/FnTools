@@ -60,6 +60,40 @@ namespace FnTools
         public static Either<TL, TR> Right<TL, TR>(TR right) => right;
 
         /// <summary>
+        /// Instantiates Ok with the value of <typeparamref name="TOk"/>
+        /// </summary>
+        /// <param name="ok"></param>
+        /// <typeparam name="TOk"></typeparam>
+        /// <returns></returns>
+        public static Result<TOk, Nothing> Ok<TOk>(TOk ok) => ok;
+
+        /// <summary>
+        /// Instantiates Result with state Ok with the value of <typeparamref name="TOk"/>
+        /// </summary>
+        /// <param name="ok"></param>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <returns></returns>
+        public static Result<TOk, TError> Ok<TOk, TError>(TOk ok) => Result<TOk, TError>.CreateOk(ok);
+
+        /// <summary>
+        /// Instantiates Error with the value of <typeparamref name="TError"/>
+        /// </summary>
+        /// <param name="error"></param>
+        /// <typeparam name="TError"></typeparam>
+        /// <returns></returns>
+        public static Result<Nothing, TError> Error<TError>(TError error) => error;
+        
+        /// <summary>
+        /// Instantiates Result with state Error with the value of <typeparamref name="TError"/>
+        /// </summary>
+        /// <param name="error"></param>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <returns></returns>
+        public static Result<TOk, TError> Error<TOk, TError>(TError error) => Result<TOk, TError>.CreateError(error);
+
+        /// <summary>
         /// Constructs a Try using the function <paramref name="f"/>.
         /// This method will ensure any exception is caught and a Failure object is returned.
         /// </summary>
