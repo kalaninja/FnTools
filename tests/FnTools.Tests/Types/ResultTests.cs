@@ -138,10 +138,10 @@ namespace FnTools.Tests.Types
             Error<int, string>(error).RecoverWith(x => Ok<int, string>(x.Length))
                 .ShouldBe(Ok<int, string>(error.Length));
             Error<int, string>(error).RecoverWith(x => Error<int, string>(x + " error")).ShouldBe("Some error");
-            Ok(1).RecoverWith(_ => 2).ShouldBe(Ok(1));
+            Ok(1).RecoverWith<string>(_ => 2).ShouldBe(Ok(1));
 
-            Should.Throw<ArgumentNullException>(() => Ok(1).RecoverWith(null));
-            Should.Throw<ArgumentNullException>(() => Error(1).RecoverWith(null));
+            Should.Throw<ArgumentNullException>(() => Ok(1).RecoverWith<string>(null));
+            Should.Throw<ArgumentNullException>(() => Error(1).RecoverWith<string>(null));
         }
 
         [Fact]
@@ -238,11 +238,20 @@ namespace FnTools.Tests.Types
             Ok<int, string>(10).Filter(x => x < 10, "error").ShouldBe(Error("error"));
             Error("error").Filter(true).ShouldBe(Error("error"));
             Error("error").Filter(false).ShouldBe(Error("error"));
+            
+            Ok<int, string>(1).Filter(true, () => "error").ShouldBe(Ok(1));
+            Ok<int, string>(1).Filter(false, () => "error").ShouldBe(Error("error"));
+            Error<int, string>("error").Filter(true, () => "another error").ShouldBe(Error("error"));
+            Error<int, string>("error").Filter(false, () => "another error").ShouldBe(Error("error"));
 
             Should.Throw<ArgumentNullException>(() => Ok(10).Filter(null));
             Should.Throw<ArgumentNullException>(() => Error(10).Filter(null));
             Should.Throw<ArgumentNullException>(() => Ok(10).Filter(_ => false, null));
             Should.Throw<ArgumentNullException>(() => Error(10).Filter(_ => false, null));
+            Should.Throw<ArgumentNullException>(() => Ok(10).Filter(false, null));
+            Should.Throw<ArgumentNullException>(() => Ok(10).Filter(true, null));
+            Should.Throw<ArgumentNullException>(() => Error(10).Filter(true, null));
+            Should.Throw<ArgumentNullException>(() => Error(10).Filter(false, null));
         }
 
         [Fact]
