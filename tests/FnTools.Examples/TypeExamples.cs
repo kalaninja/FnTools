@@ -73,5 +73,47 @@ namespace FnTools.Examples
             sum.ShouldBeGreaterThanOrEqualTo(0);
             sum.ShouldBeLessThanOrEqualTo(6);
         }
+
+        enum MathError
+        {
+            DivisionByZero,
+            NonPositiveLogarithm,
+            NegativeSquareRoot,
+        }
+
+        [Fact]
+        public void ResultExample()
+        {
+            Result<decimal, MathError> Div(decimal x, decimal y) =>
+                Try(() => x / y).ToResult().ErrorMap(_ => MathError.DivisionByZero);
+
+            Result<double, MathError> Sqrt(double x) =>
+                Ok(Math.Sqrt(x)).Filter(x >= 0, MathError.NegativeSquareRoot);
+
+            Result<double, MathError> Ln(double x)
+            {
+                if (x > 0)
+                    return Ok(Math.Log(x));
+                else
+                    return Error(MathError.NonPositiveLogarithm);
+            }
+
+            // sqrt(ln(x / y))
+            Result<double, string> Op(decimal x, decimal y)
+            {
+                var result =
+                    from a in Div(x, y).Map(Convert.ToDouble)
+                    from b in Ln(a)
+                    from c in Sqrt(b)
+                    select c;
+
+                return result.ErrorMap(ToString<MathError>());
+            }
+
+            Op(1, 0).ShouldBe("DivisionByZero");
+            Op(1, -10).ShouldBe("NonPositiveLogarithm");
+            Op(1, 10).ShouldBe("NegativeSquareRoot");
+            Op(1, 1).ShouldBe(0);
+        }
     }
 }

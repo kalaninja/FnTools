@@ -226,7 +226,7 @@ namespace FnTools.Tests.Types
             Ok(10).Filter(x => x == 10).ShouldBe(Ok(10));
             Ok<int, string>(10).Filter(x => x == 10, "error").ShouldBe(Ok(10));
             Ok<int, string>(10).Filter(x => x == 10, () => "error").ShouldBe(Ok(10));
-            
+
             Ok(10).Filter(x => x < 5).ShouldBe(Error(default(Nothing)));
             Ok<int, string>(10).Filter(x => x < 5, "error").ShouldBe(Error("error"));
             Ok<int, int>(10).Filter(x => x < 5).ShouldBe(Error(default(int)));
@@ -238,7 +238,7 @@ namespace FnTools.Tests.Types
             Ok<int, string>(10).Filter(x => x < 10, "error").ShouldBe(Error("error"));
             Error("error").Filter(true).ShouldBe(Error("error"));
             Error("error").Filter(false).ShouldBe(Error("error"));
-            
+
             Ok<int, string>(1).Filter(true, () => "error").ShouldBe(Ok(1));
             Ok<int, string>(1).Filter(false, () => "error").ShouldBe(Error("error"));
             Error<int, string>("error").Filter(true, () => "another error").ShouldBe(Error("error"));
@@ -252,6 +252,11 @@ namespace FnTools.Tests.Types
             Should.Throw<ArgumentNullException>(() => Ok(10).Filter(true, null));
             Should.Throw<ArgumentNullException>(() => Error(10).Filter(true, null));
             Should.Throw<ArgumentNullException>(() => Error(10).Filter(false, null));
+
+            Ok(true).Filter(x => !x, "error").ShouldBe("error");
+            Ok(true).Filter(x => !x, () => "error").ShouldBe("error");
+            Ok(true).Filter(false, "error").ShouldBe("error");
+            Ok(true).Filter(false, () => "error").ShouldBe("error");
         }
 
         [Fact]
@@ -397,7 +402,7 @@ namespace FnTools.Tests.Types
             Ok(1).ToLeft(() => "right").ShouldBe(Left(1));
             Error("error").ToLeft("right").ShouldBe(Right("right"));
             Error("error").ToLeft(() => "right").ShouldBe(Right("right"));
-            
+
             Should.Throw<ArgumentNullException>(() => Ok(10).ToLeft<int>(null));
             Should.Throw<ArgumentNullException>(() => Error(10).ToLeft<int>(null));
         }
@@ -409,7 +414,7 @@ namespace FnTools.Tests.Types
             Ok(1).ToRight(() => "left").ShouldBe(Right(1));
             Error("error").ToRight("left").ShouldBe(Left("left"));
             Error("error").ToRight(() => "left").ShouldBe(Left("left"));
-            
+
             Should.Throw<ArgumentNullException>(() => Ok(10).ToRight<int>(null));
             Should.Throw<ArgumentNullException>(() => Error(10).ToRight<int>(null));
         }

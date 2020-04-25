@@ -15,9 +15,9 @@ namespace FnTools.Types
     public readonly struct Result<TOk, TError>
         : IEquatable<Result<TOk, TError>>, IGettable<TOk>, IToOption<TOk>, IToEither<TOk>
     {
-        private readonly TError _error;
+        internal readonly TError _error;
 
-        private readonly TOk _ok;
+        internal readonly TOk _ok;
 
         /// <summary>
         /// Returns true if this is Ok, false otherwise.
@@ -261,7 +261,7 @@ namespace FnTools.Types
         {
             _ = condition ?? throw new ArgumentNullException(nameof(condition));
 
-            return IsOk && condition(_ok) ? this : Error(IsOk ? error : _error);
+            return IsError || condition(_ok) ? this : new Result<TOk, TError>(error);
         }
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace FnTools.Types
             _ = condition ?? throw new ArgumentNullException(nameof(condition));
             _ = error ?? throw new ArgumentNullException(nameof(error));
 
-            return IsOk && condition(_ok) ? this : Error(IsOk ? error() : _error);
+            return IsError || condition(_ok) ? this : new Result<TOk, TError>(error());
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace FnTools.Types
         /// <param name="error"></param>
         /// <returns></returns>
         public Result<TOk, TError> Filter(bool condition, TError error = default) =>
-            IsOk && condition ? this : Error(IsOk ? error : _error);
+            IsError || condition ? this : new Result<TOk, TError>(error);
 
         /// <summary>
         /// Returns this Result if <paramref name="condition"/> is true and Result state is Ok.
@@ -300,7 +300,7 @@ namespace FnTools.Types
         {
             _ = error ?? throw new ArgumentNullException(nameof(error));
 
-            return IsOk && condition ? this : Error(IsOk ? error() : _error);
+            return IsError || condition ? this : new Result<TOk, TError>(error());
         }
 
         public override string ToString() =>
@@ -430,6 +430,67 @@ namespace FnTools.Types
         /// <returns></returns>
         public static Result<TOk, TError> Flatten<TOk, TError>(this Result<Result<TOk, TError>, TError> self) =>
             self.FlatMap(Combinators.I);
+
+        /// <summary>
+        /// Returns an Ok if applying the predicate <paramref name="condition"/> to this Result's Ok value returns true.
+        /// Otherwise, return Error containing the given <paramref name="error"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="condition"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static Result<TOk, TError> Filter<TOk, TError>(
+            this Result<TOk, Nothing> result, Func<TOk, bool> condition, TError error = default)
+        {
+            _ = condition ?? throw new ArgumentNullException(nameof(condition));
+
+            return condition(result._ok) ? new Result<TOk, TError>(result._ok) : new Result<TOk, TError>(error);
+        }
+
+        /// <summary>
+        /// Returns this Result if applying the predicate <paramref name="condition"/> to this Result's Ok value returns true.
+        /// Otherwise, return Error containing the result of applying <paramref name="error"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="condition"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static Result<TOk, TError> Filter<TOk, TError>(
+            this Result<TOk, Nothing> result, Func<TOk, bool> condition, Func<TError> error)
+        {
+            _ = condition ?? throw new ArgumentNullException(nameof(condition));
+            _ = error ?? throw new ArgumentNullException(nameof(error));
+
+            return condition(result._ok) ? new Result<TOk, TError>(result._ok) : new Result<TOk, TError>(error());
+        }
+
+        /// <summary>
+        /// Returns this Result if <paramref name="condition"/> is true and Result state is Ok.
+        /// Otherwise, return Error containing the given <paramref name="error"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="condition"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static Result<TOk, TError> Filter<TOk, TError>(
+            this Result<TOk, Nothing> result, bool condition, TError error = default) =>
+            condition ? new Result<TOk, TError>(result._ok) : new Result<TOk, TError>(error);
+
+        /// <summary>
+        /// Returns this Result if <paramref name="condition"/> is true and Result state is Ok.
+        /// Otherwise, return Error containing the result of applying <paramref name="error"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="condition"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static Result<TOk, TError> Filter<TOk, TError>(
+            this Result<TOk, Nothing> result, bool condition, Func<TError> error)
+        {
+            _ = error ?? throw new ArgumentNullException(nameof(error));
+
+            return condition ? new Result<TOk, TError>(result._ok) : new Result<TOk, TError>(error());
+        }
 
         public static Result<TTOk, TError> Select<TOk, TError, TTOk>(this Result<TOk, TError> self, Func<TOk, TTOk> map)
             => self.Map(map);
