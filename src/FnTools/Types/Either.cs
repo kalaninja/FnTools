@@ -296,6 +296,19 @@ namespace FnTools.Types
         }
 
         /// <summary>
+        /// Binds the given function across Left, discards the result, but keeps the effect.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public Either<TL, TR> FlatTap<T>(Func<TL, Either<T, TR>> map)
+        {
+            _ = map ?? throw new ArgumentNullException(nameof(map));
+
+            return FlatMap(x => map(x).Left.Map(_ => x));
+        }
+
+        /// <summary>
         /// Returns None if this is a Right or if the given <paramref name="condition"/> does not hold for the left value,
         /// otherwise, returns a Some of Left.
         /// </summary>
@@ -409,6 +422,19 @@ namespace FnTools.Types
             _ = map ?? throw new ArgumentNullException(nameof(map));
 
             return _either.IsRight ? map(_either._right) : _either._left;
+        }
+
+        /// <summary>
+        /// Binds the given function across Right, discards the result, but keeps the effect.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public Either<TL, TR> FlatTap<T>(Func<TR, Either<TL, T>> map)
+        {
+            _ = map ?? throw new ArgumentNullException(nameof(map));
+
+            return FlatMap(x => map(x).Right.Map(_ => x));
         }
 
         /// <summary>

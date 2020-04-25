@@ -189,6 +189,18 @@ namespace FnTools.Tests.Types
         }
 
         [Fact]
+        public void FlatTap()
+        {
+            Left(true).Left.FlatTap(x => Left("left")).ShouldBe(Left(true));
+            Right(true).Left.FlatTap(x => Left("left")).ShouldBe(Right(true));
+            ((Either<string, string>) Left("left")).Left.FlatTap(_ => Right("right")).ShouldBe(Right("right"));
+
+            Right(true).Right.FlatTap(x => Right("right")).ShouldBe(Right(true));
+            Left(true).Right.FlatTap(x => Right("right")).ShouldBe(Left(true));
+            ((Either<string, string>) Right("right")).Right.FlatTap(_ => Left("left")).ShouldBe(Left("left"));
+        }
+
+        [Fact]
         public void Filter()
         {
             Left(12).Left.FilterToOption(x => x > 10).ShouldBe(Some(Left(12)));
