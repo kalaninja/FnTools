@@ -1,6 +1,8 @@
 # FnTools
 
-A practical functional library for C# developers.
+A practical functional library for C# developers 
+inspired by [Scala](https://www.scala-lang.org/), [Cats](https://typelevel.org/cats/),
+[Rust](https://www.rust-lang.org/) and [Kotlin](https://kotlinlang.org/). 
 
 [![Build status](https://ci.appveyor.com/api/projects/status/9fsm093mmgrsfqtu/branch/master?svg=true)](https://ci.appveyor.com/project/kalaninja/fntools/branch/master)
 [![codecov](https://codecov.io/gh/kalaninja/FnTools/branch/master/graph/badge.svg)](https://codecov.io/gh/kalaninja/FnTools)
@@ -180,6 +182,50 @@ trySum.IsSuccess.ShouldBe(true);
 var sum = trySum.Get();
 ```
 
+**Result**
+
+Result is the type used for returning and propagating errors. It represents either success (`Ok()`) or failure (`Error()`).
+It's similar to Try type, but is designed to work with any type of error.
+```c#
+enum MathError
+{
+    DivisionByZero,
+    NonPositiveLogarithm,
+    NegativeSquareRoot,
+}
+
+Result<decimal, MathError> Div(decimal x, decimal y) =>
+    Try(() => x / y).ToResult().ErrorMap(_ => MathError.DivisionByZero);
+
+Result<double, MathError> Sqrt(double x) =>
+    Ok(Math.Sqrt(x)).Filter(x >= 0, MathError.NegativeSquareRoot);
+
+Result<double, MathError> Ln(double x)
+{
+    if (x > 0)
+        return Ok(Math.Log(x));
+    else
+        return Error(MathError.NonPositiveLogarithm);
+}
+
+// sqrt(ln(x / y))
+Result<double, string> Op(decimal x, decimal y)
+{
+    var result =
+        from a in Div(x, y).Map(Convert.ToDouble)
+        from b in Ln(a)
+        from c in Sqrt(b)
+        select c;
+
+    return result.ErrorMap(ToString<MathError>());
+}
+
+Op(1, 0).ShouldBe("DivisionByZero");
+Op(1, -10).ShouldBe("NonPositiveLogarithm");
+Op(1, 10).ShouldBe("NegativeSquareRoot");
+Op(1, 1).ShouldBe(0);
+```
+
 ## More samples
 
 ```c#
@@ -207,3 +253,13 @@ var lowerFirstChar = toLower.Compose(firstChar);
 lowerFirstChar("String").ShouldBe("s");
 ```
 
+## Release Notes
+v0.2.1 (25.04.2020)
+* Added Result (thanks @rudewalt !)
+* Added FlatTap() for Option, Either and Try
+* Added BiMap() for Either
+* Documented
+* Numerous tiny fixes and improvements
+
+v0.1.14 (13.04.2020)
+* Initial release
